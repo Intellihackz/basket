@@ -2,7 +2,6 @@
 
 import { useMemo, useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { formatUsd } from "@/lib/mock-data";
 import type { PublicIndex } from "@/lib/db/index-stats";
 import { POPULAR_TICKERS, XSTOCKS } from "@/lib/xstocks/registry";
 import IndexCard from "@/components/IndexCard";
@@ -92,16 +91,6 @@ export default function ExplorePage() {
       (s) => s.symbol.toLowerCase().includes(q) || s.name.toLowerCase().includes(q)
     );
   }, [basketStocks, stockSearch]);
-
-  const totalInvested = useMemo(() => indexes.reduce((sum, i) => sum + i.totalInvestedUsd, 0), [indexes]);
-  const totalHolders = useMemo(() => indexes.reduce((sum, i) => sum + i.holders, 0), [indexes]);
-  const topPerformer = useMemo(
-    () =>
-      [...indexes]
-        .filter((i) => i.returnSincePublishPct !== null)
-        .sort((a, b) => (b.returnSincePublishPct ?? 0) - (a.returnSincePublishPct ?? 0))[0],
-    [indexes]
-  );
 
   function toggleAsset(symbol: string) {
     setSelectedAssets((prev) =>
@@ -202,43 +191,6 @@ export default function ExplorePage() {
         <div className="pointer-events-none absolute right-4 bottom-0 hidden h-full w-[420px] items-center justify-center lg:flex">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/hero.gif" alt="Stocklana thematic index basket" className="w-full max-w-[380px] drop-shadow-xl" />
-        </div>
-      </div>
-
-      {/* Editorial Platform Stats Strip */}
-      <div className="elevated mt-6 grid grid-cols-2 gap-4 divide-y divide-border-subtle rounded-2xl border border-border-subtle bg-surface p-4 sm:grid-cols-4 sm:divide-x sm:divide-y-0 sm:p-5">
-        <div className="px-2 py-1">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted">Total Invested</p>
-          <p className="font-display mt-1 text-2xl font-bold tabular-nums text-foreground sm:text-3xl">
-            {formatUsd(totalInvested)}
-          </p>
-          <p className="mt-0.5 text-[11px] text-muted">across tokenized stocks</p>
-        </div>
-
-        <div className="px-2 py-1 sm:pl-6">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted">Active Holders</p>
-          <p className="font-display mt-1 text-2xl font-bold tabular-nums text-foreground sm:text-3xl">
-            {totalHolders.toLocaleString()}
-          </p>
-          <p className="mt-0.5 text-[11px] text-muted">wallet investors</p>
-        </div>
-
-        <div className="px-2 py-1 sm:pl-6">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted">Tokenized Equities</p>
-          <p className="font-display mt-1 text-2xl font-bold tabular-nums text-foreground sm:text-3xl">
-            {XSTOCKS.length}
-          </p>
-          <p className="mt-0.5 text-[11px] text-muted">live on Solana mainnet</p>
-        </div>
-
-        <div className="px-2 py-1 sm:pl-6">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted">Top Since Publish</p>
-          <p className="font-display mt-1 text-2xl font-bold tabular-nums text-positive sm:text-3xl">
-            {topPerformer ? `+${topPerformer.returnSincePublishPct!.toFixed(1)}%` : "N/A"}
-          </p>
-          <p className="mt-0.5 text-[11px] text-muted">
-            {topPerformer ? `by @${topPerformer.creatorUsername}` : "no data yet"}
-          </p>
         </div>
       </div>
 
