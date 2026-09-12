@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ASSET_METADATA } from "@/lib/mock-data";
 import { findXStock } from "@/lib/xstocks/registry";
 
 export function CompanyLogo({
@@ -16,11 +15,9 @@ export function CompanyLogo({
 }) {
   const [imgError, setImgError] = useState(false);
   const xstock = findXStock(symbol);
-  const meta = ASSET_METADATA[symbol];
 
-  // Prefer official xStocks CDN logo if available, fall back to local meta logo
-  const logo = !imgError ? xstock?.logo || meta?.logo : null;
-  const name = xstock?.name || meta?.name || symbol;
+  const logo = !imgError ? xstock?.logo : null;
+  const name = xstock?.name || symbol;
 
   if (logo) {
     return (

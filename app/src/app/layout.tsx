@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "@/lib/session";
 import AppPrivyProvider from "@/lib/auth/privy-provider";
-import NavBar from "@/components/NavBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Basket — Thematic Tokenized Equities on Solana",
+  title: "Basket: Thematic Tokenized Equities on Solana",
   description: "Curate, discover, and invest in custom tokenized stock baskets on Solana.",
   icons: {
     icon: [
@@ -36,10 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <AppPrivyProvider>
-          <SessionProvider>
-            <NavBar />
-            <main className="flex-1">{children}</main>
-          </SessionProvider>
+          <SessionProvider>{children}</SessionProvider>
         </AppPrivyProvider>
       </body>
     </html>

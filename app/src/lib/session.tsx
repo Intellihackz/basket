@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { usePrivy, useLogin, useLogout, useConnectWallet } from "@privy-io/react-auth";
+import { usePrivy, useLogin, useLogout } from "@privy-io/react-auth";
 
 type DbUser = {
   username: string;
@@ -11,9 +11,11 @@ type DbUser = {
 type SessionState = {
   ready: boolean;
   signedIn: boolean;
+  userId: string | null;
   username: string | null;
   loginMethod: string | null;
   walletLinked: boolean;
+  walletAddress: string | null;
   walletShort: string | null;
   avatarIndex: number | null;
   signIn: () => void;
@@ -29,10 +31,9 @@ function shortenAddress(address: string): string {
 }
 
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const { ready, authenticated, user, logout } = usePrivy();
+  const { ready, authenticated, user, logout, linkWallet } = usePrivy();
   const { login } = useLogin();
   useLogout(); // registers the logout listener; we call logout() from usePrivy directly
-  const { connectWallet } = useConnectWallet();
 
   const [dbUser, setDbUser] = useState<DbUser | null>(null);
   const [syncedForId, setSyncedForId] = useState<string | null>(null);
@@ -74,9 +75,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       value={{
         ready,
         signedIn: ready && authenticated,
+        userId: ready && authenticated ? (user?.id ?? null) : null,
         username: ready && authenticated ? (dbUser?.username ?? null) : null,
         loginMethod: user?.google ? "Google account" : (user?.email?.address ?? null),
         walletLinked: Boolean(wallet),
+        walletAddress: wallet?.address ?? null,
         walletShort: wallet ? shortenAddress(wallet.address) : null,
         avatarIndex: ready && authenticated ? (dbUser?.avatarIndex ?? null) : null,
         signIn: () => login(),
@@ -85,7 +88,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           setSyncedForId(null);
           await logout();
         },
-        linkWallet: () => connectWallet(),
+        linkWallet: () => linkWallet({ walletChainType: "solana-only" }),
         setAvatar,
       }}
     >

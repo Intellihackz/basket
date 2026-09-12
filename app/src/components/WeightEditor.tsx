@@ -1,10 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ASSET_METADATA } from "@/lib/mock-data";
 import { chartColor } from "@/lib/chart-colors";
 import { CompanyLogo } from "@/components/TickerChip";
-import { searchXStocks, getPopularXStocks } from "@/lib/xstocks/registry";
+import { searchXStocks, getPopularXStocks, findXStock } from "@/lib/xstocks/registry";
 
 export type DraftAsset = { symbol: string; name: string; weight: number };
 
@@ -203,9 +202,9 @@ export default function WeightEditor({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="truncate font-mono font-bold text-sm text-foreground">{a.symbol}</span>
-                    {ASSET_METADATA[a.symbol]?.mint && (
+                    {findXStock(a.symbol)?.mint && (
                       <span className="font-mono text-[10px] text-muted hidden sm:inline">
-                        {ASSET_METADATA[a.symbol].mint!.slice(0, 4)}...{ASSET_METADATA[a.symbol].mint!.slice(-4)}
+                        {findXStock(a.symbol)!.mint.slice(0, 4)}...{findXStock(a.symbol)!.mint.slice(-4)}
                       </span>
                     )}
                     <span
@@ -213,9 +212,7 @@ export default function WeightEditor({
                       style={{ backgroundColor: chartColor(i) }}
                     />
                   </div>
-                  <p className="truncate text-xs text-muted">
-                    {ASSET_METADATA[a.symbol]?.sector ? `${ASSET_METADATA[a.symbol].sector} • ` : ""}{a.name}
-                  </p>
+                  <p className="truncate text-xs text-muted">{a.name}</p>
                 </div>
 
                 {/* Weight slider & input */}

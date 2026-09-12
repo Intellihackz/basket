@@ -1,18 +1,23 @@
 import Link from "next/link";
-import type { IndexSummary } from "@/lib/mock-data";
-import { formatPercent, formatUsd } from "@/lib/mock-data";
-import Sparkline from "@/components/Sparkline";
+import type { PublicIndex } from "@/lib/db/index-stats";
+import { formatUsd } from "@/lib/mock-data";
 import Avatar from "@/components/Avatar";
 import { CompanyLogo } from "@/components/TickerChip";
+
+function formatReturn(pct: number | null): string {
+  if (pct === null) return "N/A";
+  const sign = pct > 0 ? "+" : "";
+  return `${sign}${pct.toFixed(1)}%`;
+}
 
 export default function IndexCard({
   index,
   featured = false,
 }: {
-  index: IndexSummary;
+  index: PublicIndex;
   featured?: boolean;
 }) {
-  const positive = index.return30d >= 0;
+  const positive = (index.returnSincePublishPct ?? 0) >= 0;
 
   return (
     <Link
@@ -21,34 +26,25 @@ export default function IndexCard({
         featured ? "p-6 sm:p-8" : "p-5"
       }`}
     >
-      {/* Background bleed sparkline */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 opacity-75 transition-opacity group-hover:opacity-95">
-        <Sparkline
-          points={index.history}
-          positive={positive}
-          height={featured ? 130 : 85}
-          fill
-          uid={index.id}
-        />
-      </div>
-
       <div className="relative z-10">
         {/* Top stocks count & return badge */}
         <div className="flex items-center justify-between gap-2">
           <span className="rounded-md border border-border-subtle bg-background px-2.5 py-0.5 font-mono text-[11px] font-medium tracking-wide text-muted">
             {index.assets.length} stocks
           </span>
-          <span
-            className={`inline-flex items-center gap-1 rounded-md px-2.5 py-0.5 text-xs font-semibold tabular-nums ${
-              positive
-                ? "bg-positive-soft text-positive border border-positive/20"
-                : "bg-negative-soft text-negative border border-negative/20"
-            }`}
-          >
-            <span>{positive ? "↗" : "↘"}</span>
-            {formatPercent(index.return30d)}
-            <span className="font-normal opacity-75 text-[10px]">30d</span>
-          </span>
+          {index.returnSincePublishPct !== null && (
+            <span
+              className={`inline-flex items-center gap-1 rounded-md px-2.5 py-0.5 text-xs font-semibold tabular-nums ${
+                positive
+                  ? "bg-positive-soft text-positive border border-positive/20"
+                  : "bg-negative-soft text-negative border border-negative/20"
+              }`}
+            >
+              <span>{positive ? "↗" : "↘"}</span>
+              {formatReturn(index.returnSincePublishPct)}
+              <span className="font-normal opacity-75 text-[10px]">since publish</span>
+            </span>
+          )}
         </div>
 
         {/* Title & Creator */}
@@ -98,8 +94,8 @@ export default function IndexCard({
       {/* Footer Metrics */}
       <div className="relative z-10 mt-6 flex items-center justify-between border-t border-border-subtle/60 pt-3 text-xs">
         <div>
-          <span className="text-[11px] text-muted">AUM</span>
-          <p className="font-semibold tabular-nums text-foreground">{formatUsd(index.totalValueUsd)}</p>
+          <span className="text-[11px] text-muted">Invested</span>
+          <p className="font-semibold tabular-nums text-foreground">{formatUsd(index.totalInvestedUsd)}</p>
         </div>
 
         <div className="text-center">
@@ -108,17 +104,16 @@ export default function IndexCard({
         </div>
 
         <div className="text-right">
-          <span className="text-[11px] text-muted">Inception</span>
+          <span className="text-[11px] text-muted">Since publish</span>
           <p
             className={`font-semibold tabular-nums ${
-              index.returnInception >= 0 ? "text-positive" : "text-negative"
+              (index.returnSincePublishPct ?? 0) >= 0 ? "text-positive" : "text-negative"
             }`}
           >
-            {formatPercent(index.returnInception)}
+            {formatReturn(index.returnSincePublishPct)}
           </p>
         </div>
       </div>
     </Link>
   );
 }
-

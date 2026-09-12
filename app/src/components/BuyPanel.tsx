@@ -1,57 +1,118 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useWallets, useSignAndSendTransaction } from "@privy-io/react-auth/solana";
+import { Connection } from "@solana/web3.js";
+import bs58 from "bs58";
 import type { Asset } from "@/lib/mock-data";
 import { formatUsdFull } from "@/lib/mock-data";
-import { useMockSession } from "@/lib/mock-session";
-import SignInModal from "@/components/SignInModal";
+import { findXStock } from "@/lib/xstocks/registry";
+import { useSession } from "@/lib/session";
 import { chartColor } from "@/lib/chart-colors";
 import { CompanyLogo } from "@/components/TickerChip";
+import { planBasketBuy } from "@/lib/jupiter/build-basket-tx";
+import { USDC_MINT, WSOL_MINT } from "@/lib/jupiter/client";
 
 const PRESETS_USDC = [50, 100, 250, 500, 1000];
 const PRESETS_SOL = [0.5, 1, 2, 5, 10];
 
-type TxStep = "idle" | "routing" | "swapping" | "minting" | "confirmed";
+const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com";
 
-export default function BuyPanel({ assets }: { assets: Asset[] }) {
-  const { signedIn, walletLinked, linkWallet } = useMockSession();
+type TxStatus =
+  | { step: "idle" }
+  | { step: "quoting" }
+  | { step: "signing"; batch: number; total: number }
+  | { step: "confirmed"; signatures: string[] }
+  | { step: "error"; message: string };
+
+export default function BuyPanel({ indexId, assets }: { indexId: string; assets: Asset[] }) {
+  const { signedIn, userId, walletLinked, walletAddress, linkWallet, signIn } = useSession();
+  const { wallets } = useWallets();
+  const { signAndSendTransaction } = useSignAndSendTransaction();
+
   const [amount, setAmount] = useState("250");
   const [currency, setCurrency] = useState<"USDC" | "SOL">("USDC");
-  const [signInOpen, setSignInOpen] = useState(false);
-  const [txStep, setTxStep] = useState<TxStep>("idle");
-  const [txHash, setTxHash] = useState<string | null>(null);
+  const [status, setStatus] = useState<TxStatus>({ step: "idle" });
+
+  const connection = useMemo(() => new Connection(RPC_URL, "confirmed"), []);
 
   const amountNum = Number(amount) || 0;
   const solEquivalent = (amountNum / 154.2).toFixed(3);
 
-  function handleBuyClick() {
+  async function handleBuyClick() {
     if (!signedIn) {
-      setSignInOpen(true);
+      signIn();
       return;
     }
-    if (!walletLinked) {
+    if (!walletLinked || !walletAddress) return;
+
+    const wallet = wallets.find((w) => w.address === walletAddress);
+    if (!wallet) {
+      setStatus({ step: "error", message: "Linked wallet not found. Try reconnecting it." });
       return;
     }
 
-    // Realistic Solana Execution sequence
-    setTxStep("routing");
-    setTimeout(() => {
-      setTxStep("swapping");
-      setTimeout(() => {
-        setTxStep("minting");
-        setTimeout(() => {
-          setTxStep("confirmed");
-          setTxHash(`5Kx...${Math.random().toString(36).substring(2, 8).toUpperCase()}`);
-          setTimeout(() => {
-            setTxStep("idle");
-            setTxHash(null);
-          }, 6000);
-        }, 900);
-      }, 900);
-    }, 800);
+    const resolvedAssets = assets
+      .map((a) => ({
+        symbol: a.symbol,
+        mint: a.mint || findXStock(a.symbol)?.mint,
+        weightBps: a.weightBps,
+      }))
+      .filter((a): a is { symbol: string; mint: string; weightBps: number } => Boolean(a.mint));
+
+    if (resolvedAssets.length === 0) {
+      setStatus({ step: "error", message: "None of this basket's assets could be resolved to a mint." });
+      return;
+    }
+
+    const inputMint = currency === "USDC" ? USDC_MINT : WSOL_MINT;
+    const decimals = currency === "USDC" ? 1_000_000 : 1_000_000_000;
+
+    try {
+      setStatus({ step: "quoting" });
+      const plan = await planBasketBuy({
+        connection,
+        userPublicKey: walletAddress,
+        inputMint,
+        totalAmountBaseUnits: Math.floor(amountNum * decimals),
+        assets: resolvedAssets,
+      });
+
+      const signatures: string[] = [];
+      for (let i = 0; i < plan.transactions.length; i++) {
+        setStatus({ step: "signing", batch: i + 1, total: plan.transactions.length });
+        const { signature } = await signAndSendTransaction({
+          transaction: plan.transactions[i],
+          wallet,
+        });
+        signatures.push(bs58.encode(signature));
+      }
+
+      setStatus({ step: "confirmed", signatures });
+
+      if (userId) {
+        fetch("/api/purchases", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            indexId,
+            buyerUserId: userId,
+            walletAddress,
+            currency,
+            amountBaseUnits: Math.floor(amountNum * decimals),
+            signatures,
+          }),
+        }).catch((err) => console.error("Failed to record purchase:", err));
+      }
+    } catch (err) {
+      setStatus({
+        step: "error",
+        message: err instanceof Error ? err.message : "The swap didn't go through.",
+      });
+    }
   }
 
-  const isExecuting = txStep !== "idle" && txStep !== "confirmed";
+  const isExecuting = status.step === "quoting" || status.step === "signing";
 
   return (
     <div className="elevated rounded-2xl border border-border-subtle bg-surface p-6 shadow-sm">
@@ -143,7 +204,7 @@ export default function BuyPanel({ assets }: { assets: Asset[] }) {
               ? currency === "USDC"
                 ? `$${amountNum.toFixed(2)}`
                 : `${amountNum} SOL`
-              : "—"}
+              : "$0.00"}
           </span>
         </div>
 
@@ -198,32 +259,31 @@ export default function BuyPanel({ assets }: { assets: Asset[] }) {
         </div>
       </div>
 
-      {/* Execution Stepper Banner */}
+      {/* Execution Status Banner */}
       {isExecuting && (
         <div className="mt-4 rounded-xl border border-accent/30 bg-accent-soft p-3.5 text-xs text-accent-strong space-y-2">
           <div className="flex items-center justify-between font-semibold">
             <span className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-accent animate-ping" />
-              {txStep === "routing" && "1/3 Simulating optimal route..."}
-              {txStep === "swapping" && "2/3 Swapping on Jupiter DEX..."}
-              {txStep === "minting" && "3/3 Minting tokenized basket LP..."}
+              {status.step === "quoting" && "Routing across Jupiter..."}
+              {status.step === "signing" &&
+                `Confirm in wallet: transaction ${status.batch}/${status.total}`}
             </span>
             <span className="font-mono text-[10px]">Processing</span>
-          </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-sm bg-surface">
-            <div
-              className="h-full bg-accent transition-all duration-700"
-              style={{
-                width: txStep === "routing" ? "33%" : txStep === "swapping" ? "66%" : "95%",
-              }}
-            />
           </div>
         </div>
       )}
 
+      {/* Error banner */}
+      {status.step === "error" && (
+        <div className="mt-4 rounded-xl border border-negative/30 bg-negative-soft p-3.5 text-xs text-negative">
+          {status.message}
+        </div>
+      )}
+
       {/* Confirmed Receipt */}
-      {txStep === "confirmed" && txHash && (
-        <div className="mt-4 rounded-xl border border-positive/30 bg-positive-soft p-3.5 text-xs text-positive space-y-1">
+      {status.step === "confirmed" && (
+        <div className="mt-4 rounded-xl border border-positive/30 bg-positive-soft p-3.5 text-xs text-positive space-y-1.5">
           <div className="flex items-center gap-1.5 font-bold">
             <span>✓</span>
             <span>Transaction confirmed on Solana!</span>
@@ -231,10 +291,22 @@ export default function BuyPanel({ assets }: { assets: Asset[] }) {
           <p className="text-[11px] text-positive/90">
             Minted proportional basket tokens into your linked wallet.
           </p>
-          <div className="mt-1 flex items-center justify-between font-mono text-[10px] text-positive/80 border-t border-positive/20 pt-1.5">
-            <span>Tx: {txHash}</span>
-            <span className="underline cursor-pointer">View on Solscan ↗</span>
-          </div>
+          {status.signatures.map((sig) => (
+            <div
+              key={sig}
+              className="mt-1 flex items-center justify-between font-mono text-[10px] text-positive/80 border-t border-positive/20 pt-1.5"
+            >
+              <span>Tx: {sig.slice(0, 8)}…{sig.slice(-8)}</span>
+              <a
+                href={`https://solscan.io/tx/${sig}`}
+                target="_blank"
+                rel="noreferrer"
+                className="underline cursor-pointer"
+              >
+                View on Solscan ↗
+              </a>
+            </div>
+          ))}
         </div>
       )}
 
@@ -266,10 +338,6 @@ export default function BuyPanel({ assets }: { assets: Asset[] }) {
           </button>
         )}
       </div>
-
-      <SignInModal open={signInOpen} onClose={() => setSignInOpen(false)} />
     </div>
   );
 }
-
-

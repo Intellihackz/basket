@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // touched to force a Turbopack module-resolution cache reset
   images: {
     remotePatterns: [
       {

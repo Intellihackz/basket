@@ -3,15 +3,18 @@
 import { useState } from "react";
 import type { Asset } from "@/lib/mock-data";
 import { chartColor } from "@/lib/chart-colors";
-import { ASSET_METADATA } from "@/lib/mock-data";
+import { findXStock } from "@/lib/xstocks/registry";
 import { CompanyLogo } from "@/components/TickerChip";
 
 export default function AllocationBar({
   assets,
   showLegend = true,
+  livePrices,
 }: {
   assets: Asset[];
   showLegend?: boolean;
+  /** symbol -> live USD price, e.g. from an index's hydrated `livePricesUsd` */
+  livePrices?: Record<string, number>;
 }) {
   const [hoveredSymbol, setHoveredSymbol] = useState<string | null>(null);
 
@@ -41,7 +44,8 @@ export default function AllocationBar({
         <ul className="mt-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-2">
           {assets.map((a) => {
             const isHovered = hoveredSymbol === a.symbol;
-            const meta = ASSET_METADATA[a.symbol];
+            const mint = a.mint || findXStock(a.symbol)?.mint;
+            const livePrice = livePrices?.[a.symbol];
             return (
               <li
                 key={a.symbol}
@@ -58,21 +62,16 @@ export default function AllocationBar({
                   <div className="truncate">
                     <div className="flex items-center gap-2">
                       <span className="font-mono font-bold text-foreground text-sm">{a.symbol}</span>
-                      {meta?.sector && (
-                        <span className="rounded bg-surface border border-border-subtle px-1.5 py-0.2 text-[10px] font-medium text-muted">
-                          {meta.sector}
-                        </span>
-                      )}
-                      {meta?.mint && (
+                      {mint && (
                         <a
-                          href={`https://solscan.io/token/${meta.mint}`}
+                          href={`https://solscan.io/token/${mint}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
                           className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border-subtle/80 bg-surface px-1.5 py-0.2 font-mono text-[10px] text-muted hover:border-foreground/20 hover:text-foreground transition-colors"
-                          title={`Solana Token-2022 Mint: ${meta.mint}`}
+                          title={`Solana Token-2022 Mint: ${mint}`}
                         >
-                          <span>{meta.mint.slice(0, 4)}...{meta.mint.slice(-4)}</span>
+                          <span>{mint.slice(0, 4)}...{mint.slice(-4)}</span>
                           <span className="text-[9px]">↗</span>
                         </a>
                       )}
@@ -85,13 +84,9 @@ export default function AllocationBar({
                   <span className="font-display font-bold text-sm text-foreground block">
                     {(a.weightBps / 100).toFixed(0)}%
                   </span>
-                  {meta && (
-                    <span
-                      className={`text-[11px] font-mono font-medium ${
-                        meta.change24h >= 0 ? "text-positive" : "text-negative"
-                      }`}
-                    >
-                      ${meta.price.toFixed(2)}
+                  {livePrice !== undefined && (
+                    <span className="text-[11px] font-mono font-medium text-muted">
+                      ${livePrice.toFixed(2)}
                     </span>
                   )}
                 </div>
