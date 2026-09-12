@@ -163,7 +163,7 @@ export default function ExplorePage() {
         <div className="relative z-10 max-w-lg">
           <div className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium tracking-wide backdrop-blur-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-[#fde68a] animate-pulse" />
-            <span>798 REAL TOKENIZED EQUITIES ON SOLANA</span>
+            <span>798 TOKENIZED EQUITIES ON SOLANA</span>
           </div>
 
           <h1 className="font-display mt-4 text-4xl leading-[1.08] sm:text-5xl font-bold tracking-tight text-accent-foreground">
@@ -173,8 +173,7 @@ export default function ExplorePage() {
           </h1>
 
           <p className="mt-4 text-sm sm:text-base leading-relaxed text-accent-foreground/80 font-normal">
-            Curate custom baskets of tokenized stocks. Discover conviction plays built by
-            top analysts. Invest in an entire market thesis in one single transaction.
+            Build custom baskets of tokenized equities. Discover indexes built by other investors and invest in an entire market thesis in a single transaction.
           </p>
 
           <div className="mt-7 flex flex-wrap items-center gap-3">
@@ -189,7 +188,7 @@ export default function ExplorePage() {
               href="#baskets"
               className="inline-flex items-center rounded-xl border border-accent-foreground/30 px-5 py-2.5 text-sm font-medium text-accent-foreground transition-colors duration-150 hover:bg-white/10"
             >
-              Browse baskets
+              Browse indexes
             </a>
           </div>
         </div>
