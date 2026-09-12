@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { MockSessionProvider } from "@/lib/mock-session";
+import { SessionProvider } from "@/lib/session";
+import AppPrivyProvider from "@/lib/auth/privy-provider";
 import NavBar from "@/components/NavBar";
 
 const geistSans = Geist({
@@ -17,6 +18,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Basket — Thematic Tokenized Equities on Solana",
   description: "Curate, discover, and invest in custom tokenized stock baskets on Solana.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -26,10 +35,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <MockSessionProvider>
-          <NavBar />
-          <main className="flex-1">{children}</main>
-        </MockSessionProvider>
+        <AppPrivyProvider>
+          <SessionProvider>
+            <NavBar />
+            <main className="flex-1">{children}</main>
+          </SessionProvider>
+        </AppPrivyProvider>
       </body>
     </html>
   );
