@@ -1,7 +1,11 @@
+import { XSTOCKS, findXStock } from "@/lib/xstocks/registry";
+
 export type Asset = {
   symbol: string;
   name: string;
   weightBps: number; // basis points, sums to 10_000 per index
+  mint?: string;
+  isTradingHalted?: boolean;
 };
 
 export type PricePoint = { date: string; value: number };
@@ -90,7 +94,7 @@ export const indexes: IndexSummary[] = [
     assets: [
       { symbol: "TSLA", name: "Tesla Inc", weightBps: 4000 },
       { symbol: "NVDA", name: "NVIDIA Corp", weightBps: 3000 },
-      { symbol: "ABB", name: "ABB Ltd", weightBps: 1500 },
+      { symbol: "ROK", name: "Rockwell Automation", weightBps: 1500 },
       { symbol: "ISRG", name: "Intuitive Surgical", weightBps: 1500 },
     ],
     totalValueUsd: 51230,
@@ -140,8 +144,8 @@ export const indexes: IndexSummary[] = [
     description: "Uranium miners and the utilities betting on nuclear for baseload AI power demand.",
     creatorUsername: "zed",
     assets: [
-      { symbol: "CCJ", name: "Cameco Corp", weightBps: 4000 },
-      { symbol: "VST", name: "Vistra Corp", weightBps: 3000 },
+      { symbol: "URA", name: "Global X Uranium ETF", weightBps: 4000 },
+      { symbol: "NLR", name: "VanEck Uranium and Nuclear", weightBps: 3000 },
       { symbol: "NEE", name: "NextEra Energy", weightBps: 3000 },
     ],
     totalValueUsd: 19870,
@@ -163,8 +167,8 @@ export const indexes: IndexSummary[] = [
     creatorUsername: "mkim",
     assets: [
       { symbol: "RKLB", name: "Rocket Lab USA", weightBps: 4500 },
-      { symbol: "ASTS", name: "AST SpaceMobile", weightBps: 3000 },
-      { symbol: "LUNR", name: "Intuitive Machines", weightBps: 2500 },
+      { symbol: "GE", name: "GE Aerospace", weightBps: 3000 },
+      { symbol: "SPCX", name: "SpaceX", weightBps: 2500 },
     ],
     totalValueUsd: 12450,
     holders: 268,
@@ -226,35 +230,100 @@ export type AssetDetail = {
   sector: string;
   price: number;
   change24h: number;
-  logo?: string;
+  logo?: string | null;
+  mint?: string;
+  isTradingHalted?: boolean;
 };
 
-export const ASSET_METADATA: Record<string, AssetDetail> = {
-  NVDA: { symbol: "NVDA", name: "NVIDIA Corp", sector: "AI & Compute", price: 128.4, change24h: 3.8, logo: "/nvidia.png" },
-  AAPL: { symbol: "AAPL", name: "Apple Inc", sector: "Consumer Hardware", price: 224.1, change24h: 0.9, logo: "/apple.png" },
-  MSFT: { symbol: "MSFT", name: "Microsoft Corp", sector: "Enterprise Cloud", price: 432.5, change24h: 1.4, logo: "/microsoft.png" },
-  NFLX: { symbol: "NFLX", name: "Netflix Inc", sector: "Streaming Media", price: 684.2, change24h: 2.1, logo: "/netflix.png" },
-  TSLA: { symbol: "TSLA", name: "Tesla Inc", sector: "Robotics & EV", price: 248.8, change24h: 2.1 },
-  TSM: { symbol: "TSM", name: "Taiwan Semiconductor", sector: "Semiconductor Foundry", price: 174.2, change24h: 4.1 },
-  AMD: { symbol: "AMD", name: "Advanced Micro Devices", sector: "AI Processors", price: 152.6, change24h: 1.8 },
-  AVGO: { symbol: "AVGO", name: "Broadcom Inc", sector: "Custom Silicon", price: 168.9, change24h: 2.7 },
-  GOOGL: { symbol: "GOOGL", name: "Alphabet Inc", sector: "AI & Cloud", price: 182.3, change24h: 1.1 },
-  AMZN: { symbol: "AMZN", name: "Amazon.com Inc", sector: "Cloud & Commerce", price: 188.4, change24h: 1.5 },
-  META: { symbol: "META", name: "Meta Platforms", sector: "Social & AI", price: 512.7, change24h: 2.9 },
-  CRM: { symbol: "CRM", name: "Salesforce Inc", sector: "Enterprise SaaS", price: 254.1, change24h: -0.4 },
-  ORCL: { symbol: "ORCL", name: "Oracle Corp", sector: "Cloud Infrastructure", price: 142.8, change24h: 1.6 },
-  ABB: { symbol: "ABB", name: "ABB Ltd", sector: "Industrial Automation", price: 54.2, change24h: 1.2 },
-  ISRG: { symbol: "ISRG", name: "Intuitive Surgical", sector: "Medical Robotics", price: 486.0, change24h: 1.7 },
-  CCJ: { symbol: "CCJ", name: "Cameco Corp", sector: "Nuclear Fuels", price: 48.2, change24h: 3.4 },
-  VST: { symbol: "VST", name: "Vistra Corp", sector: "Nuclear Power", price: 89.4, change24h: 4.2 },
-  NEE: { symbol: "NEE", name: "NextEra Energy", sector: "Clean Baseload", price: 78.1, change24h: 0.8 },
-  RKLB: { symbol: "RKLB", name: "Rocket Lab USA", sector: "Orbital Launch", price: 14.8, change24h: -1.2 },
-  ASTS: { symbol: "ASTS", name: "AST SpaceMobile", sector: "Satellite Cellular", price: 26.4, change24h: 5.6 },
-  LUNR: { symbol: "LUNR", name: "Intuitive Machines", sector: "Lunar Exploration", price: 8.9, change24h: 2.2 },
-  KO: { symbol: "KO", name: "Coca-Cola Co", sector: "Consumer Staples", price: 69.4, change24h: 0.4 },
-  JNJ: { symbol: "JNJ", name: "Johnson & Johnson", sector: "Healthcare & Pharma", price: 162.1, change24h: 0.2 },
-  PG: { symbol: "PG", name: "Procter & Gamble", sector: "Consumer Staples", price: 172.5, change24h: 0.5 },
+// Curated seed baseline details for prominent assets
+const BASE_PRICES: Record<string, { price: number; change24h: number; sector: string }> = {
+  NVDA: { price: 128.4, change24h: 3.8, sector: "AI & Compute" },
+  AAPL: { price: 224.1, change24h: 0.9, sector: "Consumer Hardware" },
+  MSFT: { price: 432.5, change24h: 1.4, sector: "Enterprise Cloud" },
+  NFLX: { price: 684.2, change24h: 2.1, sector: "Streaming Media" },
+  TSLA: { price: 248.8, change24h: 2.1, sector: "Robotics & EV" },
+  TSM: { price: 174.2, change24h: 4.1, sector: "Semiconductor Foundry" },
+  AMD: { price: 152.6, change24h: 1.8, sector: "AI Processors" },
+  AVGO: { price: 168.9, change24h: 2.7, sector: "Custom Silicon" },
+  GOOGL: { price: 182.3, change24h: 1.1, sector: "AI & Cloud" },
+  AMZN: { price: 188.4, change24h: 1.5, sector: "Cloud & Commerce" },
+  META: { price: 512.7, change24h: 2.9, sector: "Social & AI" },
+  CRM: { price: 254.1, change24h: -0.4, sector: "Enterprise SaaS" },
+  ORCL: { price: 142.8, change24h: 1.6, sector: "Cloud Infrastructure" },
+  ROK: { price: 295.4, change24h: 1.5, sector: "Industrial Automation" },
+  ISRG: { price: 486.0, change24h: 1.7, sector: "Medical Robotics" },
+  URA: { price: 31.4, change24h: 3.4, sector: "Nuclear Fuels" },
+  NLR: { price: 82.6, change24h: 2.8, sector: "Uranium & Nuclear" },
+  NEE: { price: 78.1, change24h: 0.8, sector: "Clean Baseload" },
+  RKLB: { price: 14.8, change24h: -1.2, sector: "Orbital Launch" },
+  GE: { price: 182.5, change24h: 1.9, sector: "Aerospace & Defense" },
+  SPCX: { price: 310.0, change24h: 6.8, sector: "Space Exploration" },
+  KO: { price: 69.4, change24h: 0.4, sector: "Consumer Staples" },
+  JNJ: { price: 162.1, change24h: 0.2, sector: "Healthcare & Pharma" },
+  PG: { price: 172.5, change24h: 0.5, sector: "Consumer Staples" },
+  PLTR: { price: 34.2, change24h: 4.6, sector: "Enterprise AI" },
+  COIN: { price: 218.0, change24h: 5.2, sector: "Crypto Economy" },
+  MSTR: { price: 145.2, change24h: 7.1, sector: "Bitcoin Treasury" },
+  SPY: { price: 565.0, change24h: 0.7, sector: "Broad Market Index" },
+  QQQ: { price: 490.0, change24h: 1.1, sector: "Tech 100 Index" },
 };
+
+export function getAssetDetail(symbolOrUnderlying: string): AssetDetail {
+  const clean = symbolOrUnderlying.trim();
+  const xstock = findXStock(clean);
+  const upper = clean.toUpperCase();
+  const base = BASE_PRICES[upper] || BASE_PRICES[upper.replace(/X$/, "")];
+
+  if (xstock) {
+    let hash = 0;
+    for (let i = 0; i < xstock.symbol.length; i++) {
+      hash = (hash << 5) - hash + xstock.symbol.charCodeAt(i);
+      hash |= 0;
+    }
+    const seedPrice = Math.abs(hash % 400) + 40 + Math.abs(hash % 90) / 100;
+    const seedChange = (hash % 80) / 10;
+
+    return {
+      symbol: xstock.underlyingSymbol,
+      name: xstock.name,
+      sector: base?.sector || "Tokenized Equity",
+      price: base?.price || Number(seedPrice.toFixed(2)),
+      change24h: base?.change24h ?? Number(seedChange.toFixed(1)),
+      logo: xstock.logo,
+      mint: xstock.mint,
+      isTradingHalted: xstock.isTradingHalted,
+    };
+  }
+
+  return {
+    symbol: clean,
+    name: base ? clean : `${clean} Token`,
+    sector: base?.sector || "Tokenized Asset",
+    price: base?.price || 100.0,
+    change24h: base?.change24h ?? 0.0,
+  };
+}
+
+// Proxied ASSET_METADATA dynamically resolves any of the 798 real xStocks
+export const ASSET_METADATA: Record<string, AssetDetail> = new Proxy(
+  {},
+  {
+    get(_target, prop: string) {
+      if (typeof prop !== "string" || prop === "then") return undefined;
+      return getAssetDetail(prop);
+    },
+    has(_target, prop: string) {
+      if (typeof prop !== "string") return false;
+      return Boolean(findXStock(prop) || BASE_PRICES[prop.toUpperCase()]);
+    },
+    ownKeys() {
+      return XSTOCKS.map((s) => s.underlyingSymbol);
+    },
+    getOwnPropertyDescriptor() {
+      return { enumerable: true, configurable: true };
+    },
+  }
+);
 
 export const MARKET_TICKER_ITEMS = [
   { symbol: "NVDA", price: 128.4, change: 3.8 },
@@ -262,15 +331,22 @@ export const MARKET_TICKER_ITEMS = [
   { symbol: "AAPL", price: 224.1, change: 0.9 },
   { symbol: "TSM", price: 174.2, change: 4.1 },
   { symbol: "MSFT", price: 432.5, change: 1.4 },
-  { symbol: "ASTS", price: 26.4, change: 5.6 },
-  { symbol: "CCJ", price: 48.2, change: 3.4 },
-  { symbol: "VST", price: 89.4, change: 4.2 },
+  { symbol: "SPCX", price: 310.0, change: 6.8 },
+  { symbol: "URA", price: 31.4, change: 3.4 },
+  { symbol: "RKLB", price: 14.8, change: -1.2 },
   { symbol: "SOL/USD", price: 154.2, change: 4.5 },
 ];
 
-export const availableAssets: { symbol: string; name: string }[] = Object.values(ASSET_METADATA).map((a) => ({
-  symbol: a.symbol,
-  name: a.name,
+export const availableAssets: {
+  symbol: string;
+  name: string;
+  mint: string;
+  logo: string | null;
+}[] = XSTOCKS.filter((s) => !s.isTradingHalted).map((s) => ({
+  symbol: s.underlyingSymbol,
+  name: s.name,
+  mint: s.mint,
+  logo: s.logo,
 }));
 
 

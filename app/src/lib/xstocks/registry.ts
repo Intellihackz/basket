@@ -26,19 +26,71 @@ export type XStock = {
 
 export const XSTOCKS: XStock[] = assetsData as XStock[];
 
-export function findXStock(underlyingSymbol: string): XStock | undefined {
-  const q = underlyingSymbol.toLowerCase();
-  return XSTOCKS.find((s) => s.underlyingSymbol.toLowerCase() === q || s.symbol.toLowerCase() === q);
+// High-speed O(1) map indexed by both underlying ticker (AAPL) and onchain ticker (AAPLx)
+const SYMBOL_MAP = new Map<string, XStock>();
+XSTOCKS.forEach((stock) => {
+  if (stock.underlyingSymbol) {
+    SYMBOL_MAP.set(stock.underlyingSymbol.toUpperCase(), stock);
+  }
+  if (stock.symbol) {
+    SYMBOL_MAP.set(stock.symbol.toUpperCase(), stock);
+  }
+});
+
+export function findXStock(symbolOrUnderlying: string): XStock | undefined {
+  if (!symbolOrUnderlying) return undefined;
+  const upper = symbolOrUnderlying.trim().toUpperCase();
+  return (
+    SYMBOL_MAP.get(upper) ||
+    (upper.endsWith("X") ? SYMBOL_MAP.get(upper.slice(0, -1)) : undefined)
+  );
 }
 
-export function searchXStocks(query: string, limit = 8): XStock[] {
-  const q = query.trim().toLowerCase();
+export const POPULAR_TICKERS = [
+  "NVDA",
+  "AAPL",
+  "MSFT",
+  "AMZN",
+  "GOOGL",
+  "META",
+  "TSLA",
+  "TSM",
+  "AMD",
+  "AVGO",
+  "COIN",
+  "PLTR",
+  "MSTR",
+  "SPY",
+  "QQQ",
+  "RKLB",
+];
+
+export function getPopularXStocks(): XStock[] {
+  return POPULAR_TICKERS.map((sym) => findXStock(sym)).filter(Boolean) as XStock[];
+}
+
+export function searchXStocks(query: string, limit = 12): XStock[] {
+  const q = query.trim().toUpperCase();
   if (!q) return [];
-  return XSTOCKS.filter(
-    (s) =>
-      !s.isTradingHalted &&
-      (s.underlyingSymbol.toLowerCase().includes(q) ||
-        s.symbol.toLowerCase().includes(q) ||
-        s.name.toLowerCase().includes(q))
-  ).slice(0, limit);
+  const activeOnly = XSTOCKS.filter((s) => !s.isTradingHalted);
+
+  const exactMatch: XStock[] = [];
+  const prefixMatch: XStock[] = [];
+  const containsMatch: XStock[] = [];
+
+  for (const s of activeOnly) {
+    const sym = (s.underlyingSymbol || "").toUpperCase();
+    const onchain = (s.symbol || "").toUpperCase();
+    const name = (s.name || "").toUpperCase();
+
+    if (sym === q || onchain === q) {
+      exactMatch.push(s);
+    } else if (sym.startsWith(q) || onchain.startsWith(q)) {
+      prefixMatch.push(s);
+    } else if (sym.includes(q) || onchain.includes(q) || name.includes(q)) {
+      containsMatch.push(s);
+    }
+  }
+
+  return [...exactMatch, ...prefixMatch, ...containsMatch].slice(0, limit);
 }

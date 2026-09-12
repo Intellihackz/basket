@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import { ASSET_METADATA } from "@/lib/mock-data";
+import { findXStock } from "@/lib/xstocks/registry";
 
 export function CompanyLogo({
   symbol,
@@ -10,20 +14,28 @@ export function CompanyLogo({
   size?: number;
   className?: string;
 }) {
+  const [imgError, setImgError] = useState(false);
+  const xstock = findXStock(symbol);
   const meta = ASSET_METADATA[symbol];
 
-  if (meta?.logo) {
+  // Prefer official xStocks CDN logo if available, fall back to local meta logo
+  const logo = !imgError ? xstock?.logo || meta?.logo : null;
+  const name = xstock?.name || meta?.name || symbol;
+
+  if (logo) {
     return (
       <div
         className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md border border-border-subtle bg-white shadow-2xs ${className}`}
         style={{ width: size, height: size }}
+        title={name}
       >
         <Image
-          src={meta.logo}
+          src={logo}
           alt={symbol}
           width={size * 2}
           height={size * 2}
           unoptimized
+          onError={() => setImgError(true)}
           className="h-full w-full object-contain p-0.5"
         />
       </div>
@@ -34,9 +46,9 @@ export function CompanyLogo({
     <div
       className={`inline-flex shrink-0 items-center justify-center rounded-md border border-border-subtle bg-surface-hover font-mono text-[10px] font-bold text-foreground shadow-2xs ${className}`}
       style={{ width: size, height: size }}
-      title={meta?.name || symbol}
+      title={name}
     >
-      {symbol.slice(0, 2)}
+      {symbol.replace(/x$/i, "").slice(0, 2)}
     </div>
   );
 }

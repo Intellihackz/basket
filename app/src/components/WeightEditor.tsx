@@ -1,15 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { availableAssets, ASSET_METADATA } from "@/lib/mock-data";
+import { ASSET_METADATA } from "@/lib/mock-data";
 import { chartColor } from "@/lib/chart-colors";
 import { CompanyLogo } from "@/components/TickerChip";
+import { searchXStocks, getPopularXStocks } from "@/lib/xstocks/registry";
 
 export type DraftAsset = { symbol: string; name: string; weight: number };
 
 const QUICK_STARTERS = [
   {
-    label: "AI Core",
+    label: "AI Hardware",
     assets: [
       { symbol: "NVDA", name: "NVIDIA Corp", weight: 40 },
       { symbol: "TSM", name: "Taiwan Semiconductor", weight: 30 },
@@ -26,11 +27,19 @@ const QUICK_STARTERS = [
     ],
   },
   {
-    label: "Orbital Space",
+    label: "Space & Frontier",
     assets: [
       { symbol: "RKLB", name: "Rocket Lab USA", weight: 50 },
-      { symbol: "ASTS", name: "AST SpaceMobile", weight: 30 },
-      { symbol: "LUNR", name: "Intuitive Machines", weight: 20 },
+      { symbol: "GE", name: "GE Aerospace", weight: 30 },
+      { symbol: "SPCX", name: "SpaceX", weight: 20 },
+    ],
+  },
+  {
+    label: "Crypto Proxies",
+    assets: [
+      { symbol: "MSTR", name: "MicroStrategy", weight: 40 },
+      { symbol: "COIN", name: "Coinbase Global", weight: 35 },
+      { symbol: "PLTR", name: "Palantir Tech", weight: 25 },
     ],
   },
 ];
@@ -49,16 +58,15 @@ export default function WeightEditor({
   const remaining = 100 - total;
 
   const results = useMemo(() => {
-    if (!query.trim()) return [];
-    const used = new Set(assets.map((a) => a.symbol));
-    return availableAssets
-      .filter(
-        (a) =>
-          !used.has(a.symbol) &&
-          (a.symbol.toLowerCase().includes(query.toLowerCase()) ||
-            a.name.toLowerCase().includes(query.toLowerCase()))
-      )
-      .slice(0, 6);
+    const used = new Set(assets.map((a) => a.symbol.toUpperCase()));
+    if (!query.trim()) {
+      return getPopularXStocks()
+        .filter((s) => !used.has(s.underlyingSymbol.toUpperCase()))
+        .slice(0, 6);
+    }
+    return searchXStocks(query, 10).filter(
+      (s) => !used.has(s.underlyingSymbol.toUpperCase()) && !used.has(s.symbol.toUpperCase())
+    );
   }, [query, assets]);
 
   function addAsset(symbol: string, name: string) {
@@ -126,26 +134,31 @@ export default function WeightEditor({
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search US equities to add (e.g. NVDA, Tesla, Apple, Cameco)..."
+          placeholder="Search 798 tokenized equities (e.g. NVDA, AAPL, MSTR, PLTR, SpaceX)..."
           className="w-full rounded-xl border border-border-subtle bg-background px-4 py-2.5 text-sm outline-none transition-all placeholder:text-muted/70 focus:border-accent focus:ring-1 focus:ring-accent"
         />
-        {results.length > 0 && (
-          <ul className="elevated absolute z-20 mt-1.5 w-full overflow-hidden rounded-xl border border-border-subtle bg-surface shadow-xl">
+        {results.length > 0 && query.trim().length > 0 && (
+          <ul className="elevated absolute z-20 mt-1.5 max-h-72 w-full overflow-y-auto rounded-xl border border-border-subtle bg-surface shadow-xl">
             {results.map((a) => (
-              <li key={a.symbol}>
+              <li key={a.mint}>
                 <button
                   type="button"
-                  onClick={() => addAsset(a.symbol, a.name)}
-                  className="flex w-full items-center justify-between px-4 py-2.5 text-left text-xs transition-colors hover:bg-surface-hover"
+                  onClick={() => addAsset(a.underlyingSymbol, a.name)}
+                  className="flex w-full items-center justify-between px-4 py-2.5 text-left text-xs transition-colors hover:bg-surface-hover cursor-pointer"
                 >
-                  <div className="flex items-center gap-2.5">
-                    <CompanyLogo symbol={a.symbol} size={20} />
-                    <div>
-                      <span className="font-mono font-bold text-foreground">{a.symbol}</span>
-                      <span className="ml-2 text-muted">{a.name}</span>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <CompanyLogo symbol={a.underlyingSymbol} size={22} />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-foreground">{a.underlyingSymbol}</span>
+                        <span className="font-mono text-[10px] text-muted">
+                          {a.mint.slice(0, 4)}...{a.mint.slice(-4)}
+                        </span>
+                      </div>
+                      <p className="truncate text-xs text-muted">{a.name}</p>
                     </div>
                   </div>
-                  <span className="rounded bg-accent-soft px-2 py-0.5 text-[11px] font-semibold text-accent-strong">
+                  <span className="rounded-md bg-accent-soft px-2 py-0.5 text-[11px] font-semibold text-accent-strong shrink-0 ml-2">
                     + Add
                   </span>
                 </button>
@@ -188,8 +201,13 @@ export default function WeightEditor({
               >
                 <CompanyLogo symbol={a.symbol} size={24} />
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2">
                     <span className="truncate font-mono font-bold text-sm text-foreground">{a.symbol}</span>
+                    {ASSET_METADATA[a.symbol]?.mint && (
+                      <span className="font-mono text-[10px] text-muted hidden sm:inline">
+                        {ASSET_METADATA[a.symbol].mint!.slice(0, 4)}...{ASSET_METADATA[a.symbol].mint!.slice(-4)}
+                      </span>
+                    )}
                     <span
                       className="h-2 w-2 rounded-full"
                       style={{ backgroundColor: chartColor(i) }}

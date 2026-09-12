@@ -1,7 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here (touched to force Turbopack cache reset) */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "xstocks-metadata.backed.fi",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

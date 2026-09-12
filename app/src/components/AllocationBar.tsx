@@ -63,6 +63,19 @@ export default function AllocationBar({
                           {meta.sector}
                         </span>
                       )}
+                      {meta?.mint && (
+                        <a
+                          href={`https://solscan.io/token/${meta.mint}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border-subtle/80 bg-surface px-1.5 py-0.2 font-mono text-[10px] text-muted hover:border-foreground/20 hover:text-foreground transition-colors"
+                          title={`Solana Token-2022 Mint: ${meta.mint}`}
+                        >
+                          <span>{meta.mint.slice(0, 4)}...{meta.mint.slice(-4)}</span>
+                          <span className="text-[9px]">↗</span>
+                        </a>
+                      )}
                     </div>
                     <span className="text-xs text-muted truncate block">{a.name}</span>
                   </div>

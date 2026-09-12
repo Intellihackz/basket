@@ -163,7 +163,7 @@ export default function ExplorePage() {
         <div className="relative z-10 max-w-lg">
           <div className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium tracking-wide backdrop-blur-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-[#fde68a] animate-pulse" />
-            <span>SOLANA TOKENIZED EQUITIES</span>
+            <span>798 REAL TOKENIZED EQUITIES ON SOLANA</span>
           </div>
 
           <h1 className="font-display mt-4 text-4xl leading-[1.08] sm:text-5xl font-bold tracking-tight text-accent-foreground">
@@ -220,11 +220,11 @@ export default function ExplorePage() {
         </div>
 
         <div className="px-2 py-1 sm:pl-6">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted">Curated Indexes</p>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted">Tokenized Equities</p>
           <p className="font-display mt-1 text-2xl font-bold tabular-nums text-foreground sm:text-3xl">
-            {indexes.length}
+            798
           </p>
-          <p className="mt-0.5 text-[11px] text-muted">thematic strategies</p>
+          <p className="mt-0.5 text-[11px] text-muted">live on Solana mainnet</p>
         </div>
 
         <div className="px-2 py-1 sm:pl-6">
