@@ -53,7 +53,7 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
 
           {/* Performance Chart Card */}
           <div className="mt-6 rounded-2xl border border-border-subtle bg-surface p-6 sm:p-7 shadow-xs">
-            <PerformanceChart history={index.history} benchmarkName={index.benchmarkName || "S&P 500"} />
+            <PerformanceChart history={index.history} />
           </div>
 
           {/* Key Financial Metrics Strip */}
@@ -62,6 +62,12 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
               <p className="text-[11px] font-medium uppercase tracking-wider text-muted">AUM Backed</p>
               <p className="mt-1 font-display text-base font-bold text-foreground sm:text-lg">
                 {formatUsdFull(index.totalValueUsd)}
+              </p>
+            </div>
+            <div className="sm:px-4">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-muted">Active Backers</p>
+              <p className="mt-1 font-display text-base font-bold text-foreground sm:text-lg">
+                {index.holders.toLocaleString()}
               </p>
             </div>
             <div className="sm:px-4">
@@ -74,7 +80,7 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
                 {formatPercent(index.return30d)}
               </p>
             </div>
-            <div className="sm:px-4">
+            <div className="sm:pl-4">
               <p className="text-[11px] font-medium uppercase tracking-wider text-muted">All-Time Gain</p>
               <p
                 className={`mt-1 font-display text-base font-bold sm:text-lg ${
@@ -82,14 +88,6 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
                 }`}
               >
                 {formatPercent(index.returnInception)}
-              </p>
-            </div>
-            <div className="sm:pl-4">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-muted">
-                vs {index.benchmarkName || "Benchmark"}
-              </p>
-              <p className="mt-1 font-display text-base font-bold text-positive sm:text-lg">
-                +{(index.return30d - (index.benchmarkReturn30d || 0)).toFixed(1)}%
               </p>
             </div>
           </div>

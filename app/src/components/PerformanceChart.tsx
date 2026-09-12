@@ -11,14 +11,12 @@ const PERIODS = [
 
 export default function PerformanceChart({
   history,
-  benchmarkName = "S&P 500",
 }: {
   history: PricePoint[];
   benchmarkName?: string;
 }) {
   const [period, setPeriod] = useState<(typeof PERIODS)[number]["label"]>("90D");
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
-  const [showBenchmark, setShowBenchmark] = useState(true);
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   const slice = useMemo(() => {
@@ -38,23 +36,6 @@ export default function PerformanceChart({
   const activeChangePct = ((currentPoint.value - startVal) / startVal) * 100;
   const positive = activeChangePct >= 0;
   const color = positive ? "var(--positive)" : "var(--negative)";
-
-  // Benchmark simulation points normalized to match start value
-  const benchmarkRate = period === "30D" ? 0.042 : period === "90D" ? 0.088 : 0.22;
-  const benchmarkCoords = useMemo(() => {
-    return slice.map((p, i) => {
-      const progress = i / (slice.length - 1);
-      const bVal = startVal * (1 + progress * benchmarkRate);
-      const x = progress * width;
-      const y = height - ((bVal - min) / range) * (height - 32) - 16;
-      return { x, y, value: bVal };
-    });
-  }, [slice, min, range, startVal, benchmarkRate]);
-
-  const benchmarkPath = useMemo(
-    () => `M${benchmarkCoords.map((c) => `${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(" L")}`,
-    [benchmarkCoords]
-  );
 
   const coords = useMemo(() => {
     return slice.map((p, i) => {
@@ -102,52 +83,30 @@ export default function PerformanceChart({
               {positive ? "+" : ""}
               {activeChangePct.toFixed(2)}%
             </span>
-
-            {showBenchmark && (
-              <span className="hidden sm:inline-flex items-center gap-1 rounded-md bg-background border border-border-subtle px-2 py-0.5 text-[11px] font-mono text-muted">
-                <span className="h-1.5 w-1.5 rounded-full bg-muted/70" />
-                vs {benchmarkName} (+{(benchmarkRate * 100).toFixed(1)}%)
-              </span>
-            )}
           </div>
           <p className="mt-0.5 font-mono text-xs text-muted">
             {currentPoint.date} {hoverIndex !== null ? "(hovered point)" : `(${period} view)`}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Benchmark Toggle */}
-          <button
-            onClick={() => setShowBenchmark(!showBenchmark)}
-            className={`hidden sm:inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-medium transition-colors ${
-              showBenchmark
-                ? "border-foreground/30 bg-surface text-foreground font-semibold"
-                : "border-border-subtle bg-background text-muted hover:text-foreground"
-            }`}
-          >
-            <span className="h-2 w-2 rounded-full border border-muted/80 bg-transparent" />
-            {benchmarkName}
-          </button>
-
-          {/* Timeframe selector */}
-          <div className="inline-flex items-center gap-1 rounded-xl border border-border-subtle bg-background p-1 text-xs">
-            {PERIODS.map((p) => (
-              <button
-                key={p.label}
-                onClick={() => {
-                  setPeriod(p.label);
-                  setHoverIndex(null);
-                }}
-                className={`rounded-lg px-3 py-1 font-medium transition-all duration-150 active:scale-95 ${
-                  period === p.label
-                    ? "bg-accent text-accent-foreground font-semibold shadow-xs"
-                    : "text-muted hover:text-foreground"
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
+        {/* Timeframe selector */}
+        <div className="inline-flex items-center gap-1 rounded-xl border border-border-subtle bg-background p-1 text-xs">
+          {PERIODS.map((p) => (
+            <button
+              key={p.label}
+              onClick={() => {
+                setPeriod(p.label);
+                setHoverIndex(null);
+              }}
+              className={`rounded-lg px-3 py-1 font-medium transition-all duration-150 active:scale-95 cursor-pointer ${
+                period === p.label
+                  ? "bg-accent text-accent-foreground font-semibold shadow-xs"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -184,19 +143,6 @@ export default function PerformanceChart({
 
           {/* Area & Line */}
           <path d={areaPath} fill="url(#perf-fill)" stroke="none" />
-
-          {/* Comparative Benchmark dashed curve */}
-          {showBenchmark && (
-            <path
-              d={benchmarkPath}
-              fill="none"
-              stroke="var(--foreground)"
-              strokeOpacity="0.3"
-              strokeWidth="1.75"
-              strokeDasharray="4 4"
-              vectorEffect="non-scaling-stroke"
-            />
-          )}
 
           <path
             d={linePath}
