@@ -5,8 +5,11 @@ import type { Asset } from "@/lib/mock-data";
 import { formatUsdFull } from "@/lib/mock-data";
 import { useMockSession } from "@/lib/mock-session";
 import SignInModal from "@/components/SignInModal";
+import { chartColor } from "@/lib/chart-colors";
+import { CompanyLogo } from "@/components/TickerChip";
 
-const PRESETS = [50, 100, 250, 500, 1000];
+const PRESETS_USDC = [50, 100, 250, 500, 1000];
+const PRESETS_SOL = [0.5, 1, 2, 5, 10];
 
 type TxStep = "idle" | "routing" | "swapping" | "minting" | "confirmed";
 
@@ -58,7 +61,10 @@ export default function BuyPanel({ assets }: { assets: Asset[] }) {
         </h3>
         <div className="inline-flex rounded-lg border border-border-subtle bg-background p-0.5 text-[11px] font-medium">
           <button
-            onClick={() => setCurrency("USDC")}
+            onClick={() => {
+              setCurrency("USDC");
+              if (currency === "SOL") setAmount("250");
+            }}
             className={`rounded-md px-2.5 py-0.5 transition-colors cursor-pointer ${
               currency === "USDC" ? "bg-accent text-accent-foreground font-semibold" : "text-muted"
             }`}
@@ -66,7 +72,10 @@ export default function BuyPanel({ assets }: { assets: Asset[] }) {
             USDC
           </button>
           <button
-            onClick={() => setCurrency("SOL")}
+            onClick={() => {
+              setCurrency("SOL");
+              if (currency === "USDC") setAmount("1.5");
+            }}
             className={`rounded-md px-2.5 py-0.5 transition-colors cursor-pointer ${
               currency === "SOL" ? "bg-accent text-accent-foreground font-semibold" : "text-muted"
             }`}
@@ -97,7 +106,8 @@ export default function BuyPanel({ assets }: { assets: Asset[] }) {
           </span>
           <input
             type="number"
-            min="1"
+            min="0.01"
+            step="any"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="w-full bg-transparent text-xl font-bold tracking-tight outline-none font-mono"
@@ -108,28 +118,76 @@ export default function BuyPanel({ assets }: { assets: Asset[] }) {
 
         {/* Quick Amount Presets */}
         <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1">
-          {PRESETS.map((preset) => (
+          {(currency === "USDC" ? PRESETS_USDC : PRESETS_SOL).map((preset) => (
             <button
               key={preset}
               onClick={() => setAmount(preset.toString())}
-              className={`flex-1 rounded-lg border py-1 text-xs font-semibold transition-colors ${
+              className={`flex-1 rounded-lg border py-1 text-xs font-semibold transition-colors cursor-pointer ${
                 amountNum === preset
                   ? "border-accent bg-accent-soft text-accent-strong"
                   : "border-border-subtle bg-surface text-muted hover:border-foreground/20 hover:text-foreground"
               }`}
             >
-              ${preset}
+              {currency === "USDC" ? `$${preset}` : `${preset}◎`}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Order Execution Details */}
-      <div className="mt-5 space-y-2 rounded-xl border border-border-subtle/80 bg-background/50 p-3.5 text-xs">
-        <div className="flex items-center justify-between text-muted">
-          <span>Allocation Target</span>
-          <span className="font-mono font-medium text-foreground">{assets.length} tokenized equities</span>
+      {/* Investment Shared Across Stocks */}
+      <div className="mt-4 rounded-xl border border-border-subtle/80 bg-background/50 p-3.5">
+        <div className="flex items-center justify-between pb-2 border-b border-border-subtle/60 text-[11px] font-semibold uppercase tracking-wider text-muted">
+          <span>Shared Across Stocks</span>
+          <span className="font-mono text-foreground">
+            {amountNum > 0
+              ? currency === "USDC"
+                ? `$${amountNum.toFixed(2)}`
+                : `${amountNum} SOL`
+              : "—"}
+          </span>
         </div>
+
+        {/* Proportional micro-bar */}
+        <div className="mt-2.5 flex h-1.5 w-full gap-[2px] overflow-hidden rounded-md bg-surface">
+          {assets.map((a, i) => (
+            <div
+              key={a.symbol}
+              className="h-full"
+              style={{ width: `${a.weightBps / 100}%`, backgroundColor: chartColor(i) }}
+              title={`${a.symbol}: ${(a.weightBps / 100).toFixed(0)}%`}
+            />
+          ))}
+        </div>
+
+        {/* Per-stock shared amount breakdown list */}
+        <ul className="mt-3 max-h-48 space-y-2 overflow-y-auto pr-0.5">
+          {assets.map((asset) => {
+            const weightPct = asset.weightBps / 100;
+            const shareValue = (amountNum * weightPct) / 100;
+            return (
+              <li key={asset.symbol} className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 min-w-0">
+                  <CompanyLogo symbol={asset.symbol} size={18} />
+                  <div className="flex items-baseline gap-1.5 truncate">
+                    <span className="font-mono font-bold text-foreground">{asset.symbol}</span>
+                    <span className="font-mono text-[10px] text-muted">({weightPct.toFixed(0)}%)</span>
+                  </div>
+                </div>
+                <div className="text-right font-mono font-semibold tabular-nums text-foreground">
+                  {currency === "USDC" ? (
+                    <span>${shareValue.toFixed(2)}</span>
+                  ) : (
+                    <span>{shareValue.toFixed(3)} SOL</span>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      {/* Order Execution Details */}
+      <div className="mt-3.5 space-y-1.5 rounded-xl border border-border-subtle/80 bg-background/40 p-3 text-xs">
         <div className="flex items-center justify-between text-muted">
           <span>Protocol Fee</span>
           <span className="font-semibold text-positive">0% ($0.00)</span>
