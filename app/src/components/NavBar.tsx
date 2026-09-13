@@ -35,40 +35,40 @@ export default function NavBar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border-subtle bg-background/95 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-4 sm:px-6">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-8 px-4 py-5 sm:px-6">
         <Link href="/" className="group flex shrink-0 items-baseline">
-          <span className="font-display text-xl italic text-foreground transition-colors group-hover:text-accent">
+          <span className="font-display text-2xl italic text-foreground transition-colors group-hover:text-accent">
             Basket
           </span>
         </Link>
 
-        <nav className="flex items-center gap-6">
+        <nav className="flex items-center gap-8">
           {navItems.map((item) => {
             const active = item.match(pathname);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`relative py-1 text-sm font-medium transition-colors ${
+                className={`relative py-1 text-base font-medium transition-colors ${
                   active ? "text-foreground" : "text-muted hover:text-foreground"
                 }`}
               >
                 {item.label}
-                {active && <span className="absolute -bottom-[17px] left-0 right-0 h-0.5 bg-accent" />}
+                {active && <span className="absolute -bottom-[19px] left-0 right-0 h-0.5 bg-accent" />}
               </Link>
             );
           })}
         </nav>
 
-        <div className="flex shrink-0 items-center gap-3">
+        <div className="flex shrink-0 items-center gap-4">
           {walletLinked && (
             <div className="relative">
               <button
                 onClick={() => setWalletMenuOpen(!walletMenuOpen)}
-                className="hidden items-center gap-2 rounded-xl border border-border-subtle px-3.5 py-2 text-sm text-muted transition-colors hover:border-foreground/20 hover:text-foreground cursor-pointer sm:flex"
+                className="hidden items-center gap-2 rounded-xl border border-border-subtle px-4 py-2.5 text-sm text-muted transition-colors hover:border-foreground/20 hover:text-foreground cursor-pointer sm:flex"
               >
                 <span className="h-1.5 w-1.5 rounded-full bg-positive" />
-                <span className="font-mono text-xs">{walletShort}</span>
+                <span className="font-mono text-sm">{walletShort}</span>
                 <ChevronDownIcon className="h-3 w-3 opacity-60" />
               </button>
 
@@ -111,15 +111,15 @@ export default function NavBar() {
           {!signedIn ? (
             <button
               onClick={() => signIn()}
-              className="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95 cursor-pointer"
+              className="rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95 cursor-pointer"
             >
               Sign in
             </button>
           ) : (
             <div className="relative">
-              <Avatar username={username ?? ""} size={36} styleIndex={avatarIndex} />
+              <Avatar username={username ?? ""} size={44} styleIndex={avatarIndex} />
               <span
-                className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-background ${
+                className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background ${
                   walletLinked ? "bg-positive" : "bg-muted/60"
                 }`}
                 title={walletLinked ? "Wallet connected" : "Wallet not linked"}

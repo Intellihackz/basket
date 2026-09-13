@@ -395,62 +395,55 @@ export default function ProfilePage() {
                   <p className="mt-1 text-xs text-muted">
                     Invested capital: <strong className="text-foreground">{formatUsdFull(totalInvested)}</strong>
                   </p>
-                </div>
 
-                {underlyingStocks.length > 0 && (
-                  <div className="mt-6 rounded-2xl border border-border-subtle bg-surface p-6 sm:p-7">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                      <div>
-                        <h4 className="font-display text-base font-medium text-foreground">
-                          Underlying exposure
-                        </h4>
-                        <p className="text-xs text-muted">
-                          Net aggregated equity exposure across all {positions.length} active baskets
-                        </p>
+                  {underlyingStocks.length > 0 && (
+                    <div className="mt-6 border-t border-border-subtle pt-6">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                          <h4 className="font-display text-base font-medium text-foreground">
+                            Underlying exposure
+                          </h4>
+                          <p className="text-xs text-muted">
+                            Net aggregated equity exposure across all {positions.length} active baskets
+                          </p>
+                        </div>
+                        <span className="text-[11px] font-mono font-medium text-muted bg-surface-hover px-2.5 py-1 rounded-lg self-start sm:self-auto">
+                          {underlyingStocks.length} companies
+                        </span>
                       </div>
-                      <span className="text-[11px] font-mono font-medium text-muted bg-surface-hover px-2.5 py-1 rounded-lg self-start sm:self-auto">
-                        {underlyingStocks.length} companies
-                      </span>
-                    </div>
 
-                    <div className="mt-4 flex h-2 w-full overflow-hidden rounded-full bg-surface-hover">
-                      {underlyingStocks.map((stock, i) => {
-                        const pct = totalPortfolioValue > 0 ? (stock.usdValue / totalPortfolioValue) * 100 : 0;
-                        return (
-                          <div
-                            key={stock.symbol}
-                            style={{ width: `${pct}%`, backgroundColor: chartColor(i) }}
-                            className="transition-opacity duration-150 hover:opacity-80"
-                            title={`${stock.symbol}: ${pct.toFixed(2)}% (${formatUsdFull(stock.usdValue)})`}
-                          />
-                        );
-                      })}
-                    </div>
+                      <div className="mt-4 flex h-2 w-full overflow-hidden rounded-full bg-surface-hover">
+                        {underlyingStocks.map((stock, i) => {
+                          const pct = totalPortfolioValue > 0 ? (stock.usdValue / totalPortfolioValue) * 100 : 0;
+                          return (
+                            <div
+                              key={stock.symbol}
+                              style={{ width: `${pct}%`, backgroundColor: chartColor(i) }}
+                              className="transition-opacity duration-150 hover:opacity-80"
+                              title={`${stock.symbol}: ${pct.toFixed(2)}% (${formatUsdFull(stock.usdValue)})`}
+                            />
+                          );
+                        })}
+                      </div>
 
-                    <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                      {underlyingStocks.slice(0, 8).map((stock) => {
-                        const pct = totalPortfolioValue > 0 ? (stock.usdValue / totalPortfolioValue) * 100 : 0;
-                        return (
-                          <div
-                            key={stock.symbol}
-                            className="flex items-center justify-between gap-2.5 rounded-xl border border-border-subtle p-2.5"
-                          >
-                            <div className="flex items-center gap-2 min-w-0">
-                              <CompanyLogo symbol={stock.symbol} size={22} />
-                              <p className="font-mono text-xs font-bold text-foreground truncate">{stock.symbol}</p>
-                            </div>
-                            <div className="text-right shrink-0">
-                              <p className="font-mono text-xs font-semibold text-foreground tabular-nums">
-                                {pct.toFixed(2)}%
-                              </p>
-                              <p className="text-[10px] text-muted tabular-nums">{formatUsd(stock.usdValue)}</p>
-                            </div>
-                          </div>
-                        );
-                      })}
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {underlyingStocks.slice(0, 8).map((stock) => {
+                          const pct = totalPortfolioValue > 0 ? (stock.usdValue / totalPortfolioValue) * 100 : 0;
+                          return (
+                            <span
+                              key={stock.symbol}
+                              className="inline-flex items-center gap-2 rounded-lg bg-surface-hover px-2.5 py-1.5 text-xs"
+                            >
+                              <CompanyLogo symbol={stock.symbol} size={18} />
+                              <span className="font-mono font-bold text-foreground">{stock.symbol}</span>
+                              <span className="font-mono text-muted">{pct.toFixed(2)}%</span>
+                            </span>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
 
                 <h3 className="font-display mt-8 text-lg font-medium text-foreground">Active positions</h3>
 

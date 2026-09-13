@@ -39,6 +39,17 @@
   --terminal-text: #f4efe3;
   --terminal-text-dim: rgba(244, 239, 227, 0.5);
   --terminal-success: #6ee7a0;
+
+  /* shadcn/ui primitive aliases — mapped onto our own palette so community
+     shadcn components render in-theme instead of shadcn's default colors */
+  --primary: var(--accent);
+  --primary-foreground: var(--accent-foreground);
+  --secondary: var(--surface-hover);
+  --secondary-foreground: var(--foreground);
+  --destructive: var(--negative);
+  --destructive-foreground: #fffaf5;
+  --input: var(--border-subtle);
+  --ring: var(--accent);
 }
 
 @theme inline {
@@ -66,6 +77,14 @@
   --color-terminal-text: var(--terminal-text);
   --color-terminal-text-dim: var(--terminal-text-dim);
   --color-terminal-success: var(--terminal-success);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --font-sans: var(--font-plex-sans);
   --font-mono: var(--font-plex-mono);
   --font-display: var(--font-newsreader);
