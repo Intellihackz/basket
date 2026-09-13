@@ -1,20 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  /* warm, paper-like neutrals — not pure white/black */
-  --background: #faf8f3;
+  /* crisp neutral canvas — warmth is reserved for the accent alone */
+  --background: #fbfbfa;
   --surface: #ffffff;
-  --surface-hover: #f4f1e9;
-  --border-subtle: rgba(28, 25, 15, 0.08);
-  --foreground: #1c1a14;
-  --muted: #7a7566;
+  --surface-hover: #f3f3f1;
+  --border-subtle: rgba(15, 15, 13, 0.09);
+  --foreground: #131311;
+  --muted: #6c6c68;
 
-  /* single brand accent — deep amber/gold, kept clear of the green/red
-     gain-loss signal colors so it never gets mistaken for performance data */
-  --accent: #ad5a0a;
-  --accent-strong: #8a4708;
-  --accent-foreground: #fffaf0;
-  --accent-soft: #f7e6c9;
+  /* single brand accent — a confident burnt terracotta, kept clear of the
+     green/red gain-loss signal colors so it never gets mistaken for
+     performance data */
+  --accent: #c2540a;
+  --accent-strong: #9c4308;
+  --accent-foreground: #fffaf5;
+  --accent-soft: #fbe7d6;
 
   --positive: #15803d;
   --positive-soft: #e6f4ea;
@@ -65,19 +66,24 @@
   --color-terminal-text: var(--terminal-text);
   --color-terminal-text-dim: var(--terminal-text-dim);
   --color-terminal-success: var(--terminal-success);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-geist-sans);
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+  --font-display: var(--font-newsreader);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 .font-display {
-  letter-spacing: -0.025em;
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.01em;
+}
+
+.font-mono {
+  font-variant-numeric: tabular-nums;
 }
 
 /* tinted, layered elevation instead of flat borders */
@@ -109,6 +115,18 @@ body {
   color: var(--accent-strong);
 }
 
+/* Hide the native spinner chrome — themed inputs shouldn't carry unstyled browser defaults. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 * {
   scrollbar-color: var(--border-subtle) transparent;
 }
@@ -131,17 +149,21 @@ h1, h2, h3 {
   text-wrap: balance;
 }
 
-@keyframes cursor-blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-
 @keyframes registry-scroll {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
 
-@keyframes commit-stamp {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
+.animate-marquee {
+  animation: registry-scroll 28s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
 }

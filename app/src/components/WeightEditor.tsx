@@ -4,8 +4,38 @@ import { useMemo, useState } from "react";
 import { chartColor } from "@/lib/chart-colors";
 import { CompanyLogo } from "@/components/TickerChip";
 import { searchXStocks, getPopularXStocks, findXStock } from "@/lib/xstocks/registry";
+import { blockInvalidNumberKeys, blurOnWheel } from "@/lib/number-input";
 
 export type DraftAsset = { symbol: string; name: string; weight: number };
+
+function XIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 10 10" fill="none">
+      <path d="M1 1L9 9M9 1L1 9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function CheckIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 12 10" fill="none">
+      <path d="M1 5L4.5 8.5L11 1.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function GripIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 10 16" fill="currentColor">
+      <circle cx="2.5" cy="2.5" r="1.25" />
+      <circle cx="7.5" cy="2.5" r="1.25" />
+      <circle cx="2.5" cy="8" r="1.25" />
+      <circle cx="7.5" cy="8" r="1.25" />
+      <circle cx="2.5" cy="13.5" r="1.25" />
+      <circle cx="7.5" cy="13.5" r="1.25" />
+    </svg>
+  );
+}
 
 const QUICK_STARTERS = [
   {
@@ -51,6 +81,8 @@ export default function WeightEditor({
   onChange: (assets: DraftAsset[]) => void;
 }) {
   const [query, setQuery] = useState("");
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const total = assets.reduce((sum, a) => sum + a.weight, 0);
   const isValid = assets.length > 0 && total === 100;
@@ -81,6 +113,14 @@ export default function WeightEditor({
 
   function removeAsset(symbol: string) {
     onChange(assets.filter((a) => a.symbol !== symbol));
+  }
+
+  function reorder(fromIndex: number, toIndex: number) {
+    if (fromIndex === toIndex) return;
+    const next = [...assets];
+    const [moved] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, moved);
+    onChange(next);
   }
 
   function equalizeWeights() {
@@ -196,8 +236,31 @@ export default function WeightEditor({
             {assets.map((a, i) => (
               <li
                 key={a.symbol}
-                className="flex items-center gap-3 rounded-xl border border-border-subtle/80 bg-background/60 px-3.5 py-2.5"
+                draggable
+                onDragStart={() => setDraggedIndex(i)}
+                onDragEnter={() => setDragOverIndex(i)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (draggedIndex !== null) reorder(draggedIndex, i);
+                  setDraggedIndex(null);
+                  setDragOverIndex(null);
+                }}
+                onDragEnd={() => {
+                  setDraggedIndex(null);
+                  setDragOverIndex(null);
+                }}
+                className={`flex items-center gap-3 rounded-xl border bg-background/60 px-3.5 py-2.5 transition-colors ${
+                  draggedIndex === i
+                    ? "opacity-40 border-border-subtle/80"
+                    : dragOverIndex === i && draggedIndex !== null
+                    ? "border-accent"
+                    : "border-border-subtle/80"
+                }`}
               >
+                <span className="shrink-0 cursor-grab text-muted/60 hover:text-muted active:cursor-grabbing" aria-label="Drag to reorder">
+                  <GripIcon className="h-4 w-2.5" />
+                </span>
                 <CompanyLogo symbol={a.symbol} size={24} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
@@ -232,6 +295,8 @@ export default function WeightEditor({
                     max="100"
                     value={a.weight}
                     onChange={(e) => updateWeight(a.symbol, Number(e.target.value) || 0)}
+                    onKeyDown={blockInvalidNumberKeys}
+                    onWheel={blurOnWheel}
                     className="w-14 rounded-lg border border-border-subtle bg-surface px-2 py-1 text-right font-mono text-sm font-bold outline-none focus:border-accent focus:ring-1 focus:ring-accent"
                   />
                   <span className="font-mono text-xs text-muted">%</span>
@@ -240,10 +305,10 @@ export default function WeightEditor({
                 <button
                   type="button"
                   onClick={() => removeAsset(a.symbol)}
-                  className="rounded-lg p-1 text-muted transition-colors hover:bg-negative-soft hover:text-negative"
+                  className="rounded-lg p-1.5 text-muted transition-colors hover:bg-negative-soft hover:text-negative"
                   aria-label={`Remove ${a.symbol}`}
                 >
-                  ✕
+                  <XIcon className="h-2.5 w-2.5" />
                 </button>
               </li>
             ))}
@@ -263,17 +328,14 @@ export default function WeightEditor({
         </div>
 
         <div className="mt-2 flex items-center justify-between text-xs">
-          <span className="text-muted">Total Allocation Target: 100%</span>
+          <span className="text-muted">Target allocation: 100%</span>
           <span
-            className={`font-mono font-bold ${
-              isValid
-                ? "text-positive"
-                : total > 100
-                ? "text-negative"
-                : "text-foreground"
+            className={`inline-flex items-center gap-1 font-mono font-semibold ${
+              isValid ? "text-positive" : total > 100 ? "text-negative" : "text-foreground"
             }`}
           >
-            {total}% {isValid ? "✓ Balanced" : total > 100 ? `(${total - 100}% over)` : `(${remaining}% needed)`}
+            {isValid && <CheckIcon className="h-2.5 w-2.5" />}
+            {total}% {isValid ? "balanced" : total > 100 ? `(${total - 100}% over)` : `(${remaining}% needed)`}
           </span>
         </div>
       </div>

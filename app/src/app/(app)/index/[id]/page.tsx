@@ -9,11 +9,12 @@ import { findXStock } from "@/lib/xstocks/registry";
 import AllocationBar from "@/components/AllocationBar";
 import BuyPanel from "@/components/BuyPanel";
 import Avatar from "@/components/Avatar";
+import BasketReturnChart from "@/components/BasketReturnChart";
 
 function formatReturn(pct: number | null): string {
   if (pct === null) return "Not enough live price data yet";
   const sign = pct > 0 ? "+" : "";
-  return `${sign}${pct.toFixed(1)}%`;
+  return `${sign}${pct.toFixed(2)}%`;
 }
 
 export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
@@ -28,64 +29,47 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-      {/* Navigation */}
-      <div>
-        <Link
-          href="/explore"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-muted transition-colors hover:text-foreground"
-        >
-          <span>←</span>
-          <span>Explore Baskets</span>
-        </Link>
-      </div>
-
-      <div className="mt-4 grid grid-cols-1 gap-10 lg:grid-cols-[1fr_340px]">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_340px]">
         <div>
-          {/* Strategy Title & Attribution */}
-          <div>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
-              <Link
-                href={`/u/${index.creatorUsername}`}
-                className="inline-flex items-center gap-1.5 font-medium text-foreground transition-colors hover:text-accent-strong"
-              >
-                <Avatar username={index.creatorUsername} size={18} />
-                <span>@{index.creatorUsername}</span>
-              </Link>
-              <span>•</span>
-              <span>Published {new Date(index.createdAt).toLocaleDateString()}</span>
-              <span>•</span>
-              <span>{index.holders.toLocaleString()} backers</span>
-            </div>
-
-            <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              {index.name}
-            </h1>
-
-            <p className="mt-2.5 max-w-2xl text-sm leading-relaxed text-muted">
-              {index.description}
-            </p>
+          <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
+            <Link
+              href={`/u/${index.creatorUsername}`}
+              className="inline-flex items-center gap-1.5 font-medium text-foreground transition-colors hover:text-accent-strong"
+            >
+              <Avatar username={index.creatorUsername} size={18} />
+              <span>@{index.creatorUsername}</span>
+            </Link>
+            <span>•</span>
+            <span>Published {new Date(index.createdAt).toLocaleDateString()}</span>
+            <span>•</span>
+            <span>{index.holders.toLocaleString()} investors</span>
           </div>
 
-          {/* Key Financial Metrics Strip */}
-          <div className="mt-6 grid grid-cols-2 gap-y-4 rounded-xl border border-border-subtle bg-surface/50 p-4 sm:grid-cols-3 sm:p-5 sm:divide-x divide-border-subtle/70">
-            <div className="sm:pr-4">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-muted">Total Invested</p>
-              <p className="mt-1 font-display text-base font-bold text-foreground sm:text-lg">
+          <h1 className="mt-2 font-display text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
+            {index.name}
+          </h1>
+
+          <p className="mt-2.5 max-w-2xl text-base leading-relaxed text-muted">{index.description}</p>
+
+          {/* Key stats */}
+          <div className="mt-6 flex flex-wrap gap-x-10 gap-y-4 border-y border-border-subtle py-5">
+            <div>
+              <p className="font-display text-2xl font-medium tabular-nums text-foreground">
                 {formatUsdFull(index.totalInvestedUsd)}
               </p>
+              <p className="text-sm text-muted">total invested</p>
             </div>
-            <div className="sm:px-4">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-muted">Backers</p>
-              <p className="mt-1 font-display text-base font-bold text-foreground sm:text-lg">
+            <div>
+              <p className="font-display text-2xl font-medium tabular-nums text-foreground">
                 {index.holders.toLocaleString()}
               </p>
+              <p className="text-sm text-muted">investors</p>
             </div>
-            <div className="sm:pl-4">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-muted">Since Publish</p>
+            <div>
               <p
-                className={`mt-1 font-display text-base font-bold sm:text-lg ${
+                className={`font-display text-2xl font-medium tabular-nums ${
                   index.returnSincePublishPct === null
-                    ? "text-muted text-sm"
+                    ? "text-sm text-muted"
                     : index.returnSincePublishPct >= 0
                     ? "text-positive"
                     : "text-negative"
@@ -93,30 +77,35 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
               >
                 {formatReturn(index.returnSincePublishPct)}
               </p>
+              <p className="text-sm text-muted">since publish</p>
             </div>
           </div>
 
-          {/* Constituent Holdings Section */}
-          <div className="mt-10">
+          {/* Return since publish */}
+          <div className="mt-8">
+            <h2 className="font-display text-xl font-medium tracking-tight text-foreground mb-4">
+              Return since publish
+            </h2>
+            <BasketReturnChart publishedAt={index.createdAt} returnSincePublishPct={index.returnSincePublishPct} />
+          </div>
+
+          {/* Holdings */}
+          <div className="mt-8">
             <div className="mb-4 flex items-baseline justify-between">
-              <div>
-                <h2 className="font-display text-lg font-bold tracking-tight text-foreground">
-                  Constituent Holdings
-                </h2>
-                <p className="mt-0.5 text-xs text-muted">
-                  {index.assets.length} tokenized equities · the whole manifest, nothing pooled
-                </p>
-              </div>
-              <span className="font-mono text-xs text-muted">100% Target Weight</span>
+              <h2 className="font-display text-xl font-medium tracking-tight text-foreground">Holdings</h2>
+              <span className="font-mono text-xs text-muted">
+                {index.assets.length} {index.assets.length === 1 ? "asset" : "assets"}
+              </span>
             </div>
 
-            <div className="rounded-2xl border border-border-subtle bg-surface p-5 sm:p-6 shadow-xs">
-              <AllocationBar assets={displayAssets} livePrices={index.livePricesUsd} />
-            </div>
+            <AllocationBar
+              assets={displayAssets}
+              livePrices={index.livePricesUsd}
+              assetReturns={index.assetReturnsPct}
+            />
           </div>
         </div>
 
-        {/* Sticky Buy & Invest Sidebar */}
         <div className="lg:sticky lg:top-24 lg:self-start">
           <BuyPanel indexId={index.id} assets={displayAssets} />
         </div>

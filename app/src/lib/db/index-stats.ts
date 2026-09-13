@@ -14,6 +14,9 @@ export type PublicIndex = {
   /** Weighted return since publish, computed live from real prices vs. the real snapshot taken at
    * publish time. `null` when none of the constituents currently have a live price available. */
   returnSincePublishPct: number | null;
+  /** Per-asset return since publish (symbol -> pct). `null` for an asset with no live price or no
+   * recorded publish-time snapshot — never fabricated to fill a gap. */
+  assetReturnsPct: Record<string, number | null>;
   holders: number;
   totalInvestedUsd: number;
 };
@@ -49,15 +52,24 @@ export async function hydrateIndexes(rows: IndexRow[]): Promise<PublicIndex[]> {
     let sumWeightedPct = 0;
     let weightCovered = 0;
     const livePricesUsd: Record<string, number> = {};
+    const assetReturnsPct: Record<string, number | null> = {};
 
     for (const asset of row.assets) {
       const current = livePrices[asset.mint];
-      if (current === undefined) continue;
+      if (current === undefined) {
+        assetReturnsPct[asset.symbol] = null;
+        continue;
+      }
       livePricesUsd[asset.symbol] = current;
 
       const published = row.priceSnapshotUsd[asset.symbol];
-      if (!published) continue;
-      sumWeightedPct += ((current / published - 1) * 100) * asset.weightBps;
+      if (!published) {
+        assetReturnsPct[asset.symbol] = null;
+        continue;
+      }
+      const assetPct = (current / published - 1) * 100;
+      assetReturnsPct[asset.symbol] = assetPct;
+      sumWeightedPct += assetPct * asset.weightBps;
       weightCovered += asset.weightBps;
     }
 
@@ -69,6 +81,7 @@ export async function hydrateIndexes(rows: IndexRow[]): Promise<PublicIndex[]> {
       assets: row.assets,
       createdAt: row.createdAt.toISOString(),
       livePricesUsd,
+      assetReturnsPct,
       returnSincePublishPct: weightCovered > 0 ? sumWeightedPct / weightCovered : null,
       holders: stats?.holders ?? 0,
       totalInvestedUsd: stats?.totalInvestedUsd ?? 0,

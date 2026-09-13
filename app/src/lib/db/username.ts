@@ -2,12 +2,20 @@ import { db } from "./client";
 import { users } from "./schema";
 import { eq } from "drizzle-orm";
 
+const USERNAME_PATTERN = /^[a-z0-9]{3,20}$/;
+
 function slugify(input: string): string {
   const cleaned = input
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "")
     .slice(0, 20);
   return cleaned || "user";
+}
+
+/** Same character rule auto-generated usernames follow: lowercase a-z0-9, 3-20 chars. Keeps every
+ * username safe to use verbatim as a `/u/[username]` route segment. */
+export function isValidUsername(input: string): boolean {
+  return USERNAME_PATTERN.test(input);
 }
 
 /** Finds a free username derived from a hint (usually the email prefix), appending a short suffix on collision. */

@@ -2,19 +2,19 @@
 version: 1
 slug: "src-app-page-tsx"
 primary_target: "src/app/page.tsx"
-related_targets: ["src/app/explore/page.tsx","src/app/index/[id]/page.tsx","src/components/BuyPanel.tsx","src/app/create/page.tsx","src/app/u/[username]/page.tsx"]
+related_targets: ["src/app/(app)/explore/page.tsx","src/app/(app)/index/[id]/page.tsx","src/components/BuyPanel.tsx","src/app/(app)/create/page.tsx","src/app/(app)/u/[username]/page.tsx","src/app/(app)/portfolio/page.tsx","src/components/NavBar.tsx","src/components/IndexCard.tsx"]
 ---
 
 ## Direction contract
 
-THESIS: Basket reads as a public package registry, not a fintech app or a crypto casino — refuses the generic Web3 gradient-glow hero and the soft-pastel Robinhood-style fintech card grid.
+THESIS: Basket is a premium investment marketplace, not a crypto app or a trading terminal — refuses neon-glow/glassmorphism Web3 chrome and refuses reading as a stock-exchange ticker list. The basket is the hero, never the underlying stock.
 
-OWN-WORLD: Near-white paper canvas, ink-black text, ONE reserved signal color used only for live movement and primary actions (never allover color). All data — tickers, weights, dates, tx signatures — sets in monospace like a registry manifest; prose sets in a plain workhorse grotesk. Every index renders as a "package": name, publish date, a manifest of weighted holdings listed like dependencies.
+OWN-WORLD: White to off-white canvas, near-black ink, ONE reserved warm accent for CTAs and positive live movement only, never allover; red stays reserved strictly for negative return, separate from the brand accent. Large serif editorial display headlines (Public's register) paired with a clean grotesk for body and tabular-figure data (Robinhood's confident numbers). Every basket renders as a product card: name, return badge, top-holdings weight bars (Composer's allocation language), investor count, creator handle. White cards, subtle 1px borders, squircle corners, generous whitespace, restrained chrome (Trade Republic).
 
-STORY: Visitor reads the registry framing immediately — anyone publishes an index the way anyone publishes a package, no gatekeeper. They scan a live "recently published" feed, open one index's manifest (real tickers, real weights), and buy in one decisive, irreversible-feeling commit — never a multi-step fake-progress animation.
+STORY: Visitor browses baskets like curated products in a shop, not tickers on an exchange. Opening one reveals its full manifest, weighted return, and an allocation-bar breakdown; buying is one clear, minimal-chrome commit. Creating uses a visual allocation composer, not a spreadsheet.
 
-FIRST VIEWPORT: Full-bleed near-white canvas. Wordmark "Basket" set as a CLI prompt (top-left). Center: one unapologetically large claim sentence ("Publish a thesis. Own the stocks." or equivalent, final copy decided at build time) — sized to fill real visual weight, not a timid H1. Directly below: a scrolling registry-feed strip of real published indexes with ticker manifests, each carrying one reserved-color badge for performance since publish. Primary CTA "Publish an index," secondary "Browse the registry," both visible with no scroll.
+FIRST VIEWPORT: White canvas, large serif claim line, directly below a row of real basket product cards (name, return badge, top-3 weight bars, investor count, "created by @handle"). Primary CTA "Create a basket," secondary "Explore baskets," both visible with no scroll.
 
-FORM: The Registry (permissionless-publishing / package-registry world), assigned direction, position 7 of 7 in the resonance-ordered candidate list, seed key adb47d79. Raises carried into this direction from declined challengers: (1) from a floated-pigment/one-shot-lift system — the buy action is one decisive, irreversible commit, never a multi-step fake-progress animation; (2) from a screenprinted street-flyer system — the one sentence that matters gets unapologetic scale in the first viewport; (3) from a tensegrity force-diagram system — every number (weight %, price, tx signature) is pinned directly beside the thing it describes, never floated in a separate legend.
+FORM: User-pinned direction — Public × Composer × Robinhood × Trade Republic editorial-fintech-marketplace synthesis, given directly by brief. Supersedes the concept-seed roll (key 71bb36f5, safer-register round 1) per "a user- or brief-pinned direction beats the roll, always."
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.

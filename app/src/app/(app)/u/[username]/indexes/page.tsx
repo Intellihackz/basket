@@ -29,14 +29,7 @@ export default function CreatorIndexesPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-      <Link
-        href={`/u/${routeUsername}`}
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-muted transition-colors hover:text-foreground"
-      >
-        <span aria-hidden>←</span> Back to @{routeUsername}
-      </Link>
-
-      <div className="mt-4 flex flex-col gap-1">
+      <div className="flex flex-col gap-1">
         <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           {isOwnProfile ? "Your Published Indexes" : `Indexes curated by @${routeUsername}`}
         </h1>

@@ -22,6 +22,7 @@ type SessionState = {
   signOut: () => void;
   linkWallet: () => void;
   setAvatar: (index: number) => void;
+  setUsername: (username: string) => Promise<{ ok: boolean; error?: string }>;
 };
 
 const SessionContext = createContext<SessionState | null>(null);
@@ -70,6 +71,23 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     }).catch((err) => console.error("Failed to save avatar:", err));
   }
 
+  async function setUsername(username: string): Promise<{ ok: boolean; error?: string }> {
+    if (!user) return { ok: false, error: "Not signed in" };
+    try {
+      const res = await fetch("/api/users/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ privyUserId: user.id, username }),
+      });
+      const data = await res.json();
+      if (!res.ok) return { ok: false, error: data.error ?? "Failed to update username" };
+      setDbUser((prev) => (prev ? { ...prev, username: data.user.username } : prev));
+      return { ok: true };
+    } catch {
+      return { ok: false, error: "Failed to update username" };
+    }
+  }
+
   return (
     <SessionContext.Provider
       value={{
@@ -90,6 +108,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         },
         linkWallet: () => linkWallet({ walletChainType: "solana-only" }),
         setAvatar,
+        setUsername,
       }}
     >
       {children}

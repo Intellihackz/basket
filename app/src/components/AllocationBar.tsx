@@ -5,18 +5,51 @@ import type { Asset } from "@/lib/mock-data";
 import { chartColor } from "@/lib/chart-colors";
 import { findXStock } from "@/lib/xstocks/registry";
 import { CompanyLogo } from "@/components/TickerChip";
+import StockDetailModal from "@/components/StockDetailModal";
+
+function ExternalLinkIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 10 10" fill="none">
+      <path d="M3 1.5H8.5V7M8.5 1.5L1.5 8.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function TrendGlyph({ positive }: { positive: boolean }) {
+  return (
+    <svg width="8" height="8" viewBox="0 0 10 10" fill="none" className="shrink-0">
+      <path
+        d={positive ? "M5 1.5V8.5M5 1.5L1.5 5M5 1.5L8.5 5" : "M5 8.5V1.5M5 8.5L1.5 5M5 8.5L8.5 5"}
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function formatAssetReturn(pct: number): string {
+  const sign = pct > 0 ? "+" : "";
+  return `${sign}${pct.toFixed(2)}%`;
+}
 
 export default function AllocationBar({
   assets,
   showLegend = true,
   livePrices,
+  assetReturns,
 }: {
   assets: Asset[];
   showLegend?: boolean;
   /** symbol -> live USD price, e.g. from an index's hydrated `livePricesUsd` */
   livePrices?: Record<string, number>;
+  /** symbol -> % return since this basket's publish snapshot, e.g. from `assetReturnsPct` */
+  assetReturns?: Record<string, number | null>;
 }) {
   const [hoveredSymbol, setHoveredSymbol] = useState<string | null>(null);
+  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+  const [selectedReturn, setSelectedReturn] = useState<number | null>(null);
 
   return (
     <div>
@@ -46,11 +79,16 @@ export default function AllocationBar({
             const isHovered = hoveredSymbol === a.symbol;
             const mint = a.mint || findXStock(a.symbol)?.mint;
             const livePrice = livePrices?.[a.symbol];
+            const assetReturn = assetReturns?.[a.symbol] ?? null;
             return (
               <li
                 key={a.symbol}
                 onMouseEnter={() => setHoveredSymbol(a.symbol)}
                 onMouseLeave={() => setHoveredSymbol(null)}
+                onClick={() => {
+                  setSelectedAsset({ ...a, mint });
+                  setSelectedReturn(assetReturn);
+                }}
                 className={`flex items-center justify-between rounded-xl border border-border-subtle/80 bg-background/50 p-3 transition-all duration-150 cursor-pointer ${
                   isHovered
                     ? "border-accent bg-accent-soft/30 shadow-xs -translate-y-0.5"
@@ -72,7 +110,7 @@ export default function AllocationBar({
                           title={`Solana Token-2022 Mint: ${mint}`}
                         >
                           <span>{mint.slice(0, 4)}...{mint.slice(-4)}</span>
-                          <span className="text-[9px]">↗</span>
+                          <ExternalLinkIcon className="h-2 w-2" />
                         </a>
                       )}
                     </div>
@@ -84,16 +122,35 @@ export default function AllocationBar({
                   <span className="font-display font-bold text-sm text-foreground block">
                     {(a.weightBps / 100).toFixed(0)}%
                   </span>
-                  {livePrice !== undefined && (
-                    <span className="text-[11px] font-mono font-medium text-muted">
-                      ${livePrice.toFixed(2)}
-                    </span>
-                  )}
+                  <div className="flex items-center justify-end gap-1.5">
+                    {livePrice !== undefined && (
+                      <span className="text-[11px] font-mono font-medium text-muted">${livePrice.toFixed(2)}</span>
+                    )}
+                    {assetReturn !== null && (
+                      <span
+                        className={`inline-flex items-center gap-0.5 text-[11px] font-mono font-semibold ${
+                          assetReturn >= 0 ? "text-positive" : "text-negative"
+                        }`}
+                      >
+                        <TrendGlyph positive={assetReturn >= 0} />
+                        {formatAssetReturn(assetReturn)}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </li>
             );
           })}
         </ul>
+      )}
+
+      {selectedAsset && (
+        <StockDetailModal
+          asset={selectedAsset}
+          livePrice={livePrices?.[selectedAsset.symbol]}
+          returnSincePublishPct={selectedReturn}
+          onClose={() => setSelectedAsset(null)}
+        />
       )}
     </div>
   );
