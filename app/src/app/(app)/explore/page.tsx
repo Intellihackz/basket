@@ -6,6 +6,7 @@ import type { PublicIndex } from "@/lib/db/index-stats";
 import { POPULAR_TICKERS } from "@/lib/xstocks/registry";
 import IndexCard from "@/components/IndexCard";
 import { CompanyLogo } from "@/components/TickerChip";
+import { getCachedIndexes, isIndexesCacheStale, setIndexesCache } from "@/lib/indexes-cache";
 
 const SORTS = [
   { id: "Trending", label: "Trending" },
@@ -56,8 +57,8 @@ function PlusIcon({ className = "" }: { className?: string }) {
 }
 
 export default function ExplorePage() {
-  const [indexes, setIndexes] = useState<PublicIndex[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [indexes, setIndexes] = useState<PublicIndex[]>(() => getCachedIndexes() ?? []);
+  const [loading, setLoading] = useState(() => getCachedIndexes() === null);
   const [tickerPrices, setTickerPrices] = useState<Record<string, number>>({});
 
   const [sortId, setSortId] = useState<SortId>("Trending");
@@ -68,10 +69,19 @@ export default function ExplorePage() {
   const popoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch("/api/indexes")
-      .then((res) => res.json())
-      .then((data) => setIndexes(data.indexes ?? []))
-      .finally(() => setLoading(false));
+    // A fresh cache is shown immediately with no refetch; a stale (or missing) one still
+    // refetches, but only the missing case shows a loading state — a stale-but-present
+    // cache updates quietly in place once the response lands.
+    if (isIndexesCacheStale()) {
+      fetch("/api/indexes")
+        .then((res) => res.json())
+        .then((data) => {
+          const list: PublicIndex[] = data.indexes ?? [];
+          setIndexes(list);
+          setIndexesCache(list);
+        })
+        .finally(() => setLoading(false));
+    }
 
     fetch(`/api/prices?symbols=${TICKER_SYMBOLS.join(",")}`)
       .then((res) => res.json())
@@ -142,7 +152,7 @@ export default function ExplorePage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
       {/* Live equities strip */}
-      <div className="mb-10 flex items-center gap-5 border-b border-border-subtle pb-4">
+      <div className="mb-10 flex animate-fade-up items-center gap-5 border-b border-border-subtle pb-4">
         <div className="flex shrink-0 items-center gap-2 border-r border-border-subtle pr-4">
           <span className="h-1.5 w-1.5 rounded-full bg-positive" />
           <span className="font-mono text-[10px] font-medium uppercase tracking-wider text-muted">
@@ -165,7 +175,7 @@ export default function ExplorePage() {
       </div>
 
       {/* Editorial header */}
-      <div className="max-w-2xl">
+      <div className="max-w-2xl animate-fade-up" style={{ animationDelay: "150ms" }}>
         <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] font-medium leading-[1.05] tracking-tight text-foreground">
           Discover baskets.
           <br />
@@ -178,7 +188,7 @@ export default function ExplorePage() {
       </div>
 
       {/* All Baskets */}
-      <div id="baskets" className="mt-12 scroll-mt-24">
+      <div id="baskets" className="mt-12 scroll-mt-24 animate-fade-up" style={{ animationDelay: "300ms" }}>
         <div className="flex items-center justify-between">
           <h2 className="font-display text-2xl font-medium tracking-tight text-foreground">Baskets</h2>
           <Link
