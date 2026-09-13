@@ -39,7 +39,7 @@ export default function IndexCard({
   featured?: boolean;
 }) {
   const positive = (index.returnSincePublishPct ?? 0) >= 0;
-  const logoCount = featured ? 5 : 4;
+  const logoCount = featured ? 4 : 3;
   const shownLogos = index.assets.slice(0, logoCount);
   const pillTickers = index.assets.slice(0, featured ? 4 : 3);
 
@@ -47,24 +47,33 @@ export default function IndexCard({
     <Link
       href={`/index/${index.id}`}
       className={`group flex flex-col rounded-2xl border border-border-subtle bg-surface transition-all duration-200 hover:border-accent hover:shadow-[0_1px_2px_rgb(var(--shadow-color)/0.04),0_16px_32px_-12px_rgb(var(--shadow-color)/0.16)] ${
-        featured ? "p-6 sm:p-7" : "p-6"
+        featured ? "p-7 sm:p-8" : "p-7"
       }`}
     >
       {/* Logo cluster panel */}
       <div
-        className={`relative flex items-center gap-2 rounded-xl ${featured ? "p-6" : "p-5"}`}
+        className={`relative flex items-center overflow-hidden rounded-xl ${featured ? "p-7" : "p-6"}`}
         style={{ backgroundColor: `color-mix(in srgb, ${tintFor(index.id)} 14%, var(--surface-hover))` }}
       >
-        {shownLogos.map((asset) => (
-          <CompanyLogo key={asset.symbol} symbol={asset.symbol} size={featured ? 40 : 34} />
-        ))}
-        {index.assets.length > shownLogos.length && (
-          <span className="font-mono text-xs text-muted">+{index.assets.length - shownLogos.length}</span>
-        )}
+        <div className="flex flex-1 items-center gap-2 overflow-hidden pr-20">
+          {shownLogos.map((asset) => (
+            <CompanyLogo
+              key={asset.symbol}
+              symbol={asset.symbol}
+              size={featured ? 64 : 56}
+              className="shrink-0"
+            />
+          ))}
+          {index.assets.length > shownLogos.length && (
+            <span className="shrink-0 font-mono text-sm text-muted">
+              +{index.assets.length - shownLogos.length}
+            </span>
+          )}
+        </div>
 
         {index.returnSincePublishPct !== null && (
           <span
-            className={`absolute right-3 top-3 inline-flex items-center gap-1 rounded-lg bg-surface px-2 py-1 text-xs font-semibold tabular-nums ${
+            className={`absolute right-3 top-3 inline-flex items-center gap-1 rounded-lg bg-surface px-2.5 py-1.5 text-sm font-semibold tabular-nums ${
               positive ? "text-positive" : "text-negative"
             }`}
           >
@@ -76,32 +85,32 @@ export default function IndexCard({
 
       {/* Title + creator */}
       <h3
-        className={`font-display mt-4 font-medium leading-tight tracking-tight text-foreground ${
-          featured ? "text-2xl sm:text-3xl" : "text-xl"
+        className={`font-display mt-5 font-medium leading-tight tracking-tight text-foreground ${
+          featured ? "text-3xl sm:text-4xl" : "text-2xl"
         }`}
       >
         {index.name}
       </h3>
-      <div className="mt-1.5 flex items-center gap-1.5 text-sm text-muted">
-        <Avatar username={index.creatorUsername} size={16} />
+      <div className="mt-2 flex items-center gap-1.5 text-sm text-muted">
+        <Avatar username={index.creatorUsername} size={18} />
         <span>@{index.creatorUsername}</span>
       </div>
 
-      <p className={`mt-2 line-clamp-2 text-sm leading-relaxed text-muted ${featured ? "sm:max-w-lg" : ""}`}>
+      <p className={`mt-2.5 line-clamp-2 text-base leading-relaxed text-muted ${featured ? "sm:max-w-lg" : ""}`}>
         {index.description}
       </p>
 
       {/* Pill row */}
-      <div className="mt-5 flex flex-wrap items-center gap-1.5">
+      <div className="mt-5 flex flex-wrap items-center gap-2">
         {pillTickers.map((asset) => (
           <span
             key={asset.symbol}
-            className="rounded-lg bg-surface-hover px-2.5 py-1 font-mono text-xs font-medium text-foreground"
+            className="rounded-lg bg-surface-hover px-3 py-1.5 font-mono text-sm font-medium text-foreground"
           >
             {asset.symbol}
           </span>
         ))}
-        <span className="rounded-lg bg-surface-hover px-2.5 py-1 text-xs font-medium text-muted">
+        <span className="rounded-lg bg-surface-hover px-3 py-1.5 text-sm font-medium text-muted">
           {index.holders.toLocaleString()} {index.holders === 1 ? "investor" : "investors"}
         </span>
       </div>

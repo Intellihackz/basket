@@ -182,7 +182,7 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
           )}
         </div>
 
-        <div className="mt-1.5 flex items-center gap-2 rounded-xl border border-border-subtle bg-background px-4 py-3 transition-colors focus-within:border-accent">
+        <div className="mt-1.5 flex items-center gap-2 rounded-xl border border-border-subtle bg-background px-4 py-3 transition-colors">
           <span className="text-xl font-semibold text-foreground/60">{currency === "USDC" ? "$" : "◎"}</span>
           <input
             type="number"

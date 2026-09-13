@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { CompanyLogo } from "@/components/TickerChip";
 
 export type StockDetailAsset = {
@@ -60,7 +61,7 @@ export default function StockDetailModal({
     setTimeout(() => setCopied(false), 2000);
   }
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4"
       onClick={onClose}
@@ -158,6 +159,7 @@ export default function StockDetailModal({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

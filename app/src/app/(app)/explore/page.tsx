@@ -207,7 +207,7 @@ export default function ExplorePage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search baskets, tickers, or creators..."
-              className="w-full rounded-xl border border-border-subtle bg-surface px-3.5 py-2 pl-9 text-sm outline-none transition-colors placeholder:text-muted/70 focus:border-accent"
+              className="w-full rounded-xl border border-border-subtle bg-surface px-3.5 py-2 pl-9 text-sm outline-none transition-colors placeholder:text-muted/70"
             />
             <svg
               className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted"
@@ -280,7 +280,7 @@ export default function ExplorePage() {
                       value={stockSearch}
                       onChange={(e) => setStockSearch(e.target.value)}
                       placeholder="Search stocks (e.g. NVDA, AAPL)..."
-                      className="w-full rounded-lg border border-border-subtle bg-background px-3 py-1.5 text-xs outline-none focus:border-accent"
+                      className="w-full rounded-lg border border-border-subtle bg-background px-3 py-1.5 text-xs outline-none"
                     />
                   </div>
 
@@ -336,7 +336,7 @@ export default function ExplorePage() {
               <select
                 value={sortId}
                 onChange={(e) => setSortId(e.target.value as SortId)}
-                className="appearance-none rounded-xl border border-border-subtle bg-surface px-3.5 py-2 pr-7 text-xs font-medium text-foreground outline-none transition-colors hover:border-foreground/20 focus:border-accent cursor-pointer"
+                className="appearance-none rounded-xl border border-border-subtle bg-surface px-3.5 py-2 pr-7 text-xs font-medium text-foreground outline-none transition-colors hover:border-foreground/20 cursor-pointer"
               >
                 {SORTS.map((s) => (
                   <option key={s.id} value={s.id}>

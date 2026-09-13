@@ -19,11 +19,13 @@ export function CompanyLogo({
   const logo = !imgError ? xstock?.logo : null;
   const name = xstock?.name || symbol;
 
+  const radius = Math.round(size * 0.22);
+
   if (logo) {
     return (
       <div
-        className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md border border-border-subtle bg-white shadow-2xs ${className}`}
-        style={{ width: size, height: size }}
+        className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden border border-border-subtle bg-white shadow-2xs ${className}`}
+        style={{ width: size, height: size, borderRadius: radius }}
         title={name}
       >
         <Image
@@ -41,8 +43,8 @@ export function CompanyLogo({
 
   return (
     <div
-      className={`inline-flex shrink-0 items-center justify-center rounded-md border border-border-subtle bg-surface-hover font-mono text-[10px] font-bold text-foreground shadow-2xs ${className}`}
-      style={{ width: size, height: size }}
+      className={`inline-flex shrink-0 items-center justify-center border border-border-subtle bg-surface-hover font-mono text-[10px] font-bold text-foreground shadow-2xs ${className}`}
+      style={{ width: size, height: size, borderRadius: radius }}
       title={name}
     >
       {symbol.replace(/x$/i, "").slice(0, 2)}

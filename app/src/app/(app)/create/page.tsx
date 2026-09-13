@@ -15,6 +15,14 @@ function tintFor(seed: string): string {
   return TINTS[hash % TINTS.length];
 }
 
+function StepNumber({ n }: { n: number }) {
+  return (
+    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-soft text-xs font-bold text-accent-strong">
+      {n}
+    </span>
+  );
+}
+
 export default function CreatePage() {
   const { signedIn, userId, username, avatarIndex, signIn } = useSession();
   const router = useRouter();
@@ -60,16 +68,30 @@ export default function CreatePage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-      <h1 className="font-display text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
-        Create a basket
-      </h1>
-      <p className="mt-1.5 text-sm text-muted">No upfront capital needed to publish.</p>
+      {/* Editorial header */}
+      <div className="max-w-2xl animate-fade-up">
+        <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] font-medium leading-[1.05] tracking-tight text-foreground">
+          Build your basket.
+          <br />
+          Publish it in minutes.
+        </h1>
+        <p className="mt-4 text-base leading-relaxed text-muted sm:text-lg">
+          No upfront capital needed. Choose your holdings, set the weights, and share it with the
+          community.
+        </p>
+      </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_380px]">
+      <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_380px]">
         {/* Left column */}
         <div className="space-y-5">
-          <div className="rounded-2xl border border-border-subtle bg-surface p-6 sm:p-7 space-y-5">
-            <h2 className="font-display text-lg font-medium text-foreground">Basket details</h2>
+          <div
+            className="animate-fade-up rounded-2xl border border-border-subtle bg-surface p-6 sm:p-7 space-y-5"
+            style={{ animationDelay: "150ms" }}
+          >
+            <div className="flex items-center gap-2.5">
+              <StepNumber n={1} />
+              <h2 className="font-display text-lg font-medium text-foreground">Basket details</h2>
+            </div>
 
             <div>
               <label className="text-xs font-medium uppercase tracking-wider text-muted">Name</label>
@@ -77,7 +99,7 @@ export default function CreatePage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Next-Gen Robotics, Nuclear Renaissance, Cloud Titans"
-                className="mt-1.5 w-full rounded-xl border border-border-subtle bg-background px-4 py-2.5 text-sm font-medium outline-none transition-colors placeholder:text-muted/70 focus:border-accent"
+                className="mt-1.5 w-full rounded-xl border border-border-subtle bg-background px-4 py-2.5 text-sm font-medium outline-none transition-colors placeholder:text-muted/70"
               />
             </div>
 
@@ -88,35 +110,45 @@ export default function CreatePage() {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Why this combination of companies, why now..."
                 rows={3}
-                className="mt-1.5 w-full resize-none rounded-xl border border-border-subtle bg-background px-4 py-2.5 text-sm leading-relaxed outline-none transition-colors placeholder:text-muted/70 focus:border-accent"
+                className="mt-1.5 w-full resize-none rounded-xl border border-border-subtle bg-background px-4 py-2.5 text-sm leading-relaxed outline-none transition-colors placeholder:text-muted/70"
               />
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border-subtle bg-surface p-6 sm:p-7">
-            <h2 className="font-display text-lg font-medium text-foreground">Holdings</h2>
-            <p className="mt-1 mb-4 text-sm text-muted">Select equities and allocate weights summing to 100%.</p>
+          <div
+            className="animate-fade-up rounded-2xl border border-border-subtle bg-surface p-6 sm:p-7"
+            style={{ animationDelay: "300ms" }}
+          >
+            <div className="flex items-center gap-2.5">
+              <StepNumber n={2} />
+              <h2 className="font-display text-lg font-medium text-foreground">Holdings</h2>
+            </div>
+            <p className="mt-1 mb-4 pl-[34px] text-sm text-muted">
+              Select equities and allocate weights summing to 100%.
+            </p>
             <WeightEditor assets={assets} onChange={setAssets} />
           </div>
 
-          <button
-            onClick={handlePublish}
-            disabled={publishing || (signedIn && !canPublish)}
-            className="w-full rounded-xl bg-accent py-3.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-[0.99] disabled:opacity-40 disabled:active:scale-100"
-          >
-            {publishing
-              ? "Publishing..."
-              : signedIn
-              ? canPublish
-                ? "Publish basket"
-                : `Complete requirements (${total === 100 ? "enter name" : `needs ${100 - total}% allocation`})`
-              : "Sign in to publish"}
-          </button>
-          {error && <p className="text-sm text-negative">{error}</p>}
+          <div className="animate-fade-up" style={{ animationDelay: "450ms" }}>
+            <button
+              onClick={handlePublish}
+              disabled={publishing || (signedIn && !canPublish)}
+              className="w-full rounded-xl bg-accent py-3.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-[0.99] disabled:opacity-40 disabled:active:scale-100"
+            >
+              {publishing
+                ? "Publishing..."
+                : signedIn
+                ? canPublish
+                  ? "Publish basket"
+                  : `Complete requirements (${total === 100 ? "enter name" : `needs ${100 - total}% allocation`})`
+                : "Sign in to publish"}
+            </button>
+            {error && <p className="mt-2 text-sm text-negative">{error}</p>}
+          </div>
         </div>
 
         {/* Right column: live preview, matching the real basket card */}
-        <div className="lg:sticky lg:top-24 lg:self-start">
+        <div className="animate-fade-up lg:sticky lg:top-24 lg:self-start" style={{ animationDelay: "220ms" }}>
           <span className="text-xs font-medium uppercase tracking-wider text-muted">Preview</span>
 
           <div className="mt-3 flex flex-col rounded-2xl border border-border-subtle bg-surface p-5">

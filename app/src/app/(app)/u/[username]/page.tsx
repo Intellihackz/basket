@@ -179,7 +179,7 @@ export default function ProfilePage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
       {/* Profile header */}
-      <div className="rounded-2xl border border-border-subtle bg-surface p-8 sm:p-10">
+      <div className="animate-fade-up rounded-2xl border border-border-subtle bg-surface p-8 sm:p-10">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
           <div className="flex shrink-0 flex-col items-center text-center sm:items-start sm:text-left">
             <Avatar username={routeUsername} size={132} styleIndex={avatarIndex} />
@@ -217,7 +217,7 @@ export default function ProfilePage() {
                         if (e.key === "Enter") saveUsername();
                         if (e.key === "Escape") cancelEditingUsername();
                       }}
-                      className="w-40 rounded-xl border border-border-subtle bg-background px-3 py-1.5 font-display text-2xl font-medium tracking-tight text-foreground outline-none focus:border-accent sm:text-3xl"
+                      className="w-40 rounded-xl border border-border-subtle bg-background px-3 py-1.5 font-display text-2xl font-medium tracking-tight text-foreground outline-none sm:text-3xl"
                     />
                     <button
                       onClick={saveUsername}
@@ -325,7 +325,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Tabs */}
-      <div className="mt-10">
+      <div className="animate-fade-up mt-10" style={{ animationDelay: "150ms" }}>
         <div className="flex items-center gap-2 border-b border-border-subtle">
           {isOwnProfile && (
             <button

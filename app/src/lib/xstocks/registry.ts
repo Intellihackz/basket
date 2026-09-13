@@ -46,6 +46,12 @@ export function findXStock(symbolOrUnderlying: string): XStock | undefined {
   );
 }
 
+const MINT_MAP = new Map<string, XStock>(XSTOCKS.map((stock) => [stock.mint, stock]));
+
+export function findXStockByMint(mint: string): XStock | undefined {
+  return MINT_MAP.get(mint);
+}
+
 export const POPULAR_TICKERS = [
   "NVDA",
   "AAPL",

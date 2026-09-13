@@ -174,7 +174,7 @@ export default function WeightEditor({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search 798 tokenized equities (e.g. NVDA, AAPL, MSTR, PLTR, SpaceX)..."
-          className="w-full rounded-xl border border-border-subtle bg-background px-4 py-2.5 text-sm outline-none transition-all placeholder:text-muted/70 focus:border-accent focus:ring-1 focus:ring-accent"
+          className="w-full rounded-xl border border-border-subtle bg-background px-4 py-2.5 text-sm outline-none transition-all placeholder:text-muted/70"
         />
         {results.length > 0 && query.trim().length > 0 && (
           <ul className="elevated absolute z-20 mt-1.5 max-h-72 w-full overflow-y-auto rounded-xl border border-border-subtle bg-surface shadow-xl">
@@ -297,7 +297,7 @@ export default function WeightEditor({
                     onChange={(e) => updateWeight(a.symbol, Number(e.target.value) || 0)}
                     onKeyDown={blockInvalidNumberKeys}
                     onWheel={blurOnWheel}
-                    className="w-14 rounded-lg border border-border-subtle bg-surface px-2 py-1 text-right font-mono text-sm font-bold outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                    className="w-14 rounded-lg border border-border-subtle bg-surface px-2 py-1 text-right font-mono text-sm font-bold outline-none"
                   />
                   <span className="font-mono text-xs text-muted">%</span>
                 </div>

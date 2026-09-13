@@ -31,28 +31,33 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_340px]">
         <div>
-          <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
-            <Link
-              href={`/u/${index.creatorUsername}`}
-              className="inline-flex items-center gap-1.5 font-medium text-foreground transition-colors hover:text-accent-strong"
-            >
-              <Avatar username={index.creatorUsername} size={18} />
-              <span>@{index.creatorUsername}</span>
-            </Link>
-            <span>•</span>
-            <span>Published {new Date(index.createdAt).toLocaleDateString()}</span>
-            <span>•</span>
-            <span>{index.holders.toLocaleString()} investors</span>
+          <div className="animate-fade-up">
+            <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
+              <Link
+                href={`/u/${index.creatorUsername}`}
+                className="inline-flex items-center gap-1.5 font-medium text-foreground transition-colors hover:text-accent-strong"
+              >
+                <Avatar username={index.creatorUsername} size={18} />
+                <span>@{index.creatorUsername}</span>
+              </Link>
+              <span>•</span>
+              <span>Published {new Date(index.createdAt).toLocaleDateString()}</span>
+              <span>•</span>
+              <span>{index.holders.toLocaleString()} investors</span>
+            </div>
+
+            <h1 className="mt-2 font-display text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
+              {index.name}
+            </h1>
+
+            <p className="mt-2.5 max-w-2xl text-base leading-relaxed text-muted">{index.description}</p>
           </div>
 
-          <h1 className="mt-2 font-display text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
-            {index.name}
-          </h1>
-
-          <p className="mt-2.5 max-w-2xl text-base leading-relaxed text-muted">{index.description}</p>
-
           {/* Key stats */}
-          <div className="mt-6 flex flex-wrap gap-x-10 gap-y-4 border-y border-border-subtle py-5">
+          <div
+            className="animate-fade-up mt-6 flex flex-wrap gap-x-10 gap-y-4 border-y border-border-subtle py-5"
+            style={{ animationDelay: "150ms" }}
+          >
             <div>
               <p className="font-display text-2xl font-medium tabular-nums text-foreground">
                 {formatUsdFull(index.totalInvestedUsd)}
@@ -82,7 +87,7 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
           </div>
 
           {/* Return since publish */}
-          <div className="mt-8">
+          <div className="animate-fade-up mt-8" style={{ animationDelay: "300ms" }}>
             <h2 className="font-display text-xl font-medium tracking-tight text-foreground mb-4">
               Return since publish
             </h2>
@@ -90,7 +95,7 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
           </div>
 
           {/* Holdings */}
-          <div className="mt-8">
+          <div className="animate-fade-up mt-8" style={{ animationDelay: "450ms" }}>
             <div className="mb-4 flex items-baseline justify-between">
               <h2 className="font-display text-xl font-medium tracking-tight text-foreground">Holdings</h2>
               <span className="font-mono text-xs text-muted">
@@ -106,7 +111,7 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
           </div>
         </div>
 
-        <div className="lg:sticky lg:top-24 lg:self-start">
+        <div className="animate-fade-up lg:sticky lg:top-24 lg:self-start" style={{ animationDelay: "220ms" }}>
           <BuyPanel indexId={index.id} assets={displayAssets} />
         </div>
       </div>
