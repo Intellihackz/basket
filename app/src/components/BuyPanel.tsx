@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useWallets, useSignAndSendTransaction } from "@privy-io/react-auth/solana";
-import { Connection } from "@solana/web3.js";
 import bs58 from "bs58";
 import type { Asset } from "@/lib/mock-data";
 import { formatUsdFull } from "@/lib/mock-data";
@@ -13,16 +12,16 @@ import { CompanyLogo } from "@/components/TickerChip";
 import { planBasketBuy } from "@/lib/jupiter/build-basket-tx";
 import { USDC_MINT, WSOL_MINT } from "@/lib/jupiter/client";
 import { blockInvalidNumberKeys, blurOnWheel } from "@/lib/number-input";
+import { getConnection, confirmSignature } from "@/lib/solana/connection";
 
 const PRESETS_USDC = [50, 100, 250, 500, 1000];
 const PRESETS_SOL = [0.5, 1, 2, 5, 10];
-
-const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com";
 
 type TxStatus =
   | { step: "idle" }
   | { step: "quoting" }
   | { step: "signing"; batch: number; total: number }
+  | { step: "confirming"; batch: number; total: number }
   | { step: "confirmed"; signatures: string[] }
   | { step: "error"; message: string };
 
@@ -51,7 +50,7 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
   const [currency, setCurrency] = useState<"USDC" | "SOL">("USDC");
   const [status, setStatus] = useState<TxStatus>({ step: "idle" });
 
-  const connection = useMemo(() => new Connection(RPC_URL, "confirmed"), []);
+  const connection = useMemo(() => getConnection(), []);
 
   const amountNum = Number(amount) || 0;
   const solEquivalent = (amountNum / 154.2).toFixed(3);
@@ -102,7 +101,14 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
           transaction: plan.transactions[i],
           wallet,
         });
-        signatures.push(bs58.encode(signature));
+        const encoded = bs58.encode(signature);
+
+        // A signature back from the wallet is not proof the transaction went through —
+        // it's produced at sign time, before broadcast. Only the network confirming it
+        // (with no onchain error) means it actually happened.
+        setStatus({ step: "confirming", batch: i + 1, total: plan.transactions.length });
+        await confirmSignature(connection, encoded);
+        signatures.push(encoded);
       }
 
       setStatus({ step: "confirmed", signatures });
@@ -129,7 +135,7 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
     }
   }
 
-  const isExecuting = status.step === "quoting" || status.step === "signing";
+  const isExecuting = status.step === "quoting" || status.step === "signing" || status.step === "confirming";
 
   return (
     <div className="rounded-2xl border border-border-subtle bg-surface p-6">
@@ -270,6 +276,7 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
               <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
               {status.step === "quoting" && "Routing across Jupiter..."}
               {status.step === "signing" && `Confirm in wallet: transaction ${status.batch}/${status.total}`}
+              {status.step === "confirming" && `Confirming onchain: transaction ${status.batch}/${status.total}`}
             </span>
           </div>
         </div>

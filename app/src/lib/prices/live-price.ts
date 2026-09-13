@@ -1,18 +1,13 @@
 import { Connection, PublicKey } from "@solana/web3.js";
 import { getMint, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 import { getQuote, USDC_MINT } from "@/lib/jupiter/client";
-
-const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com";
+import { getConnection } from "@/lib/solana/connection";
 
 // Decimals never change for a given mint — cache indefinitely.
 const decimalsCache = new Map<string, number>();
 // Prices move — cache briefly so a page render doesn't refire N Jupiter quotes per asset.
 const priceCache = new Map<string, { price: number; at: number }>();
 const PRICE_TTL_MS = 20_000;
-
-function getConnection(): Connection {
-  return new Connection(RPC_URL, "confirmed");
-}
 
 async function getDecimals(connection: Connection, mint: string): Promise<number> {
   const cached = decimalsCache.get(mint);

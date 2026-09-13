@@ -33,12 +33,17 @@ async function resolveLookupTables(
   const tables: AddressLookupTableAccount[] = [];
   infos.forEach((info, i) => {
     if (!info) return;
-    tables.push(
-      new AddressLookupTableAccount({
-        key: new PublicKey(addresses[i]),
-        state: AddressLookupTableAccount.deserialize(info.data),
-      })
-    );
+    // A lookup table Jupiter references but this RPC hasn't finalized (or that fails to
+    // deserialize cleanly) must never enter the message — a corrupted table's `addresses`
+    // array silently breaks account-index compilation and surfaces as an opaque
+    // "encoding overruns Uint8Array" much later, at serialize() time.
+    try {
+      const state = AddressLookupTableAccount.deserialize(info.data);
+      if (!Array.isArray(state.addresses) || state.addresses.length === 0) return;
+      tables.push(new AddressLookupTableAccount({ key: new PublicKey(addresses[i]), state }));
+    } catch {
+      // Skip: the swap still fits without this table, just with a larger message.
+    }
   });
   return tables;
 }
@@ -110,37 +115,46 @@ export async function planBasketBuy(params: {
     let usedIndices: number[] = [];
 
     // Try packing as many remaining legs as possible, shrinking the batch until it fits.
+    // A batch that fails to compile or serialize at all (a corrupted lookup table, a stale
+    // account) is treated the same as one that's simply too big: shrink and try again,
+    // rather than letting an opaque low-level error abort the whole buy.
     for (; end > cursor; end--) {
-      const batchIndices = Array.from({ length: end - cursor }, (_, i) => cursor + i);
-      const batch = batchIndices.map((i) => swapIx[i]);
+      try {
+        const batchIndices = Array.from({ length: end - cursor }, (_, i) => cursor + i);
+        const batch = batchIndices.map((i) => swapIx[i]);
 
-      const setupIxs = batch.flatMap((b) => b.setupInstructions.map(toInstruction));
-      const swapIxs = batch.map((b) => toInstruction(b.swapInstruction));
-      const cleanupIxs = batch.flatMap((b) => (b.cleanupInstruction ? [toInstruction(b.cleanupInstruction)] : []));
+        const setupIxs = batch.flatMap((b) => b.setupInstructions.map(toInstruction));
+        const swapIxs = batch.map((b) => toInstruction(b.swapInstruction));
+        const cleanupIxs = batch.flatMap((b) => (b.cleanupInstruction ? [toInstruction(b.cleanupInstruction)] : []));
 
-      // One shared compute-budget instruction, not one per leg (duplicates are invalid).
-      const computeIx = ComputeBudgetProgram.setComputeUnitLimit({
-        units: Math.min(1_400_000, 200_000 * batch.length + 100_000),
-      });
+        // One shared compute-budget instruction, not one per leg (duplicates are invalid).
+        const computeIx = ComputeBudgetProgram.setComputeUnitLimit({
+          units: Math.min(1_400_000, 200_000 * batch.length + 100_000),
+        });
 
-      const lookupAddresses = Array.from(
-        new Set(batch.flatMap((b) => b.addressLookupTableAddresses))
-      );
-      const lookupTables = await resolveLookupTables(connection, lookupAddresses);
+        const lookupAddresses = Array.from(
+          new Set(batch.flatMap((b) => b.addressLookupTableAddresses))
+        );
+        const lookupTables = await resolveLookupTables(connection, lookupAddresses);
 
-      const message = new TransactionMessage({
-        payerKey: new PublicKey(userPublicKey),
-        recentBlockhash: blockhash,
-        instructions: [computeIx, ...setupIxs, ...swapIxs, ...cleanupIxs],
-      }).compileToV0Message(lookupTables);
+        const message = new TransactionMessage({
+          payerKey: new PublicKey(userPublicKey),
+          recentBlockhash: blockhash,
+          instructions: [computeIx, ...setupIxs, ...swapIxs, ...cleanupIxs],
+        }).compileToV0Message(lookupTables);
 
-      const tx = new VersionedTransaction(message);
-      const size = tx.serialize().length;
+        const tx = new VersionedTransaction(message);
+        const size = tx.serialize().length;
 
-      if (size <= MAX_TX_BYTES) {
-        built = tx;
-        usedIndices = batchIndices;
-        break;
+        if (size <= MAX_TX_BYTES) {
+          built = tx;
+          usedIndices = batchIndices;
+          break;
+        }
+      } catch {
+        // Compile/serialize itself failed for this batch size — smaller might not hit
+        // the same edge case (fewer accounts, fewer lookup tables in play).
+        continue;
       }
     }
 

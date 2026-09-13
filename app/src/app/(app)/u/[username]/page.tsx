@@ -421,7 +421,7 @@ export default function ProfilePage() {
                             key={stock.symbol}
                             style={{ width: `${pct}%`, backgroundColor: chartColor(i) }}
                             className="transition-opacity duration-150 hover:opacity-80"
-                            title={`${stock.symbol}: ${pct.toFixed(1)}% (${formatUsdFull(stock.usdValue)})`}
+                            title={`${stock.symbol}: ${pct.toFixed(2)}% (${formatUsdFull(stock.usdValue)})`}
                           />
                         );
                       })}
@@ -441,7 +441,7 @@ export default function ProfilePage() {
                             </div>
                             <div className="text-right shrink-0">
                               <p className="font-mono text-xs font-semibold text-foreground tabular-nums">
-                                {pct.toFixed(1)}%
+                                {pct.toFixed(2)}%
                               </p>
                               <p className="text-[10px] text-muted tabular-nums">{formatUsd(stock.usdValue)}</p>
                             </div>
