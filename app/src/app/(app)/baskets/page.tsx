@@ -74,12 +74,12 @@ export default function BasketsPage() {
       <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
         <div className="animate-fade-up flex flex-col items-start gap-3 rounded-2xl border border-border-subtle bg-surface p-8">
           <h1 className="font-display text-2xl font-medium text-foreground">Sign in to view your baskets</h1>
-          <p className="text-sm leading-relaxed text-muted">
+          <p className="text-base leading-relaxed text-muted">
             Track what you&apos;ve bought into and what you&apos;ve published.
           </p>
           <button
             onClick={() => session.signIn()}
-            className="mt-2 rounded-xl bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95 cursor-pointer"
+            className="mt-2 rounded-xl bg-accent px-5 py-2 text-base font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95 cursor-pointer"
           >
             Sign in
           </button>
@@ -102,10 +102,10 @@ export default function BasketsPage() {
 
       <div className="animate-fade-up mt-6" style={{ animationDelay: "150ms" }}>
         {/* Wallet */}
-        <div className="flex items-center justify-between gap-6 rounded-2xl border border-border-subtle bg-surface p-7">
+        <div className="flex items-center justify-between gap-6 rounded-2xl border border-border-subtle bg-surface p-8">
           <div>
-            <h3 className="font-display text-xl font-medium text-foreground">Your wallet</h3>
-            <p className="mt-1.5 max-w-md text-sm leading-relaxed text-muted">
+            <h3 className="font-display text-2xl font-medium text-foreground">Your wallet</h3>
+            <p className="mt-2 max-w-md text-base leading-relaxed text-muted">
               {session.walletLinked ? (
                 <>
                   Connected · <span className="font-mono text-foreground">{session.walletShort}</span>. Reads real
@@ -118,19 +118,19 @@ export default function BasketsPage() {
             {!session.walletLinked && (
               <button
                 onClick={session.linkWallet}
-                className="mt-4 rounded-xl bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95 cursor-pointer"
+                className="mt-4 rounded-xl bg-accent px-5 py-2.5 text-base font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95 cursor-pointer"
               >
                 Connect Solana wallet
               </button>
             )}
           </div>
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent-soft">
-            <WalletIcon className="h-7 w-7 text-accent-strong" />
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-accent-soft">
+            <WalletIcon className="h-9 w-9 text-accent-strong" />
           </div>
         </div>
 
         {session.walletLinked && holdingsLoaded && holdings.length === 0 && (
-          <p className="mt-6 text-sm text-muted">
+          <p className="mt-6 text-base text-muted">
             No xStock holdings found in this wallet.{" "}
             <Link href="/explore" className="font-medium text-accent hover:underline">
               Explore baskets
@@ -140,43 +140,43 @@ export default function BasketsPage() {
 
         {session.walletLinked && holdings.length > 0 && (
           <div className="mt-8">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted">Portfolio value</p>
-            <p className="mt-1.5 font-display text-3xl font-medium tabular-nums text-foreground sm:text-4xl">
+            <p className="text-base font-medium uppercase tracking-wider text-muted">Portfolio value</p>
+            <p className="mt-2 font-display text-4xl font-medium tabular-nums text-foreground sm:text-5xl">
               {formatUsdFull(totalPortfolioValue)}
             </p>
 
-            <div className="mt-8 flex items-baseline justify-between">
-              <h3 className="font-display text-lg font-medium text-foreground">Your stocks</h3>
-              <span className="text-xs text-muted">{holdings.length}</span>
+            <div className="mt-10 flex items-baseline justify-between">
+              <h3 className="font-display text-2xl font-medium text-foreground">Your stocks</h3>
+              <span className="text-base text-muted">{holdings.length}</span>
             </div>
 
-            <div className="mt-3 divide-y divide-border-subtle rounded-2xl border border-border-subtle bg-surface">
+            <div className="mt-4 divide-y divide-border-subtle rounded-2xl border border-border-subtle bg-surface">
               {holdings.map((h) => (
                 <a
                   key={h.mint}
                   href={`https://jup.ag/tokens/${h.mint}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between gap-4 p-5 transition-colors hover:bg-surface-hover"
+                  className="flex items-center justify-between gap-4 p-6 transition-colors hover:bg-surface-hover"
                 >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <CompanyLogo symbol={h.symbol} size={36} />
+                  <div className="flex min-w-0 items-center gap-4">
+                    <CompanyLogo symbol={h.symbol} size={44} />
                     <div className="min-w-0">
-                      <p className="font-display text-base font-medium text-foreground">{h.symbol}</p>
-                      <p className="mt-0.5 truncate text-xs text-muted">{h.name}</p>
+                      <p className="font-display text-lg font-semibold text-foreground">{h.symbol}</p>
+                      <p className="mt-0.5 truncate text-base text-muted">{h.name}</p>
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
                     <div className="text-right">
-                      <p className="font-display text-base font-medium tabular-nums text-foreground">
+                      <p className="font-display text-lg font-semibold tabular-nums text-foreground">
                         {h.valueUsd !== null ? formatUsdFull(h.valueUsd) : "—"}
                       </p>
-                      <p className="text-xs text-muted">
+                      <p className="text-base text-muted">
                         {h.uiAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })} shares
                         {h.priceUsd !== null && ` · $${h.priceUsd.toFixed(2)}`}
                       </p>
                     </div>
-                    <ExternalLinkIcon className="h-2.5 w-2.5 text-muted" />
+                    <ExternalLinkIcon className="h-3 w-3 text-muted" />
                   </div>
                 </a>
               ))}
@@ -192,11 +192,11 @@ export default function BasketsPage() {
             <h2 className="font-display text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
               Your baskets
             </h2>
-            <p className="mt-2 text-sm text-muted">Baskets you&apos;ve published and their live performance.</p>
+            <p className="mt-2 text-base text-muted">Baskets you&apos;ve published and their live performance.</p>
           </div>
           <Link
             href="/create"
-            className="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95"
+            className="rounded-xl bg-accent px-5 py-2.5 text-base font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95"
           >
             Create a basket
           </Link>
@@ -206,26 +206,26 @@ export default function BasketsPage() {
           <div className="mt-8 flex flex-wrap gap-x-10 gap-y-4 rounded-2xl border border-border-subtle bg-surface p-6 sm:p-7">
             <div>
               <p className="font-display text-3xl font-medium tabular-nums text-foreground">{created.length}</p>
-              <p className="text-sm text-muted">baskets created</p>
+              <p className="text-base text-muted">baskets created</p>
             </div>
             <div>
               <p className="font-display text-3xl font-medium tabular-nums text-foreground">
                 {totalHolders.toLocaleString()}
               </p>
-              <p className="text-sm text-muted">total investors</p>
+              <p className="text-base text-muted">total investors</p>
             </div>
             <div>
               <p className="font-display text-3xl font-medium tabular-nums text-foreground">
                 {formatUsd(totalVolume)}
               </p>
-              <p className="text-sm text-muted">total invested</p>
+              <p className="text-base text-muted">total invested</p>
             </div>
             {best && (
               <div>
                 <p className="font-display text-3xl font-medium tabular-nums text-positive">
                   {formatPercent(best.returnSincePublishPct!)}
                 </p>
-                <p className="text-sm text-muted">best ({best.name})</p>
+                <p className="text-base text-muted">best ({best.name})</p>
               </div>
             )}
           </div>
@@ -234,10 +234,10 @@ export default function BasketsPage() {
         <div className="mt-8">
           {!createdLoaded ? null : created.length === 0 ? (
             <div className="flex flex-col items-start gap-3 rounded-2xl border border-border-subtle bg-surface p-7">
-              <p className="text-sm text-muted">You haven&apos;t published a basket yet.</p>
+              <p className="text-base text-muted">You haven&apos;t published a basket yet.</p>
               <Link
                 href="/create"
-                className="rounded-xl bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95"
+                className="rounded-xl bg-accent px-5 py-2 text-base font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95"
               >
                 Create a basket
               </Link>

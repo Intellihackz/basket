@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "@/lib/session";
@@ -11,9 +12,22 @@ type NavItem = {
   match: (pathname: string) => boolean;
 };
 
+function MenuIcon({ open, className = "" }: { open: boolean; className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 20 16" fill="none">
+      {open ? (
+        <path d="M2 2L18 14M18 2L2 14" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+      ) : (
+        <path d="M2 2H18M2 8H18M2 14H18" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+      )}
+    </svg>
+  );
+}
+
 export default function NavBar() {
   const { signedIn, username, avatarIndex, walletLinked, signIn } = useSession();
   const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems: NavItem[] = [
     { href: "/explore", label: "Explore", match: (p) => p === "/explore" },
@@ -32,14 +46,14 @@ export default function NavBar() {
           </span>
         </Link>
 
-        <nav className="flex items-center gap-8">
+        <nav className="hidden items-center gap-8 sm:flex">
           {navItems.map((item) => {
             const active = item.match(pathname);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`relative py-1 text-base font-medium transition-colors ${
+                className={`relative py-1 text-lg font-medium transition-colors ${
                   active ? "text-foreground" : "text-muted hover:text-foreground"
                 }`}
               >
@@ -50,11 +64,11 @@ export default function NavBar() {
           })}
         </nav>
 
-        <div className="flex shrink-0 items-center gap-4">
+        <div className="flex shrink-0 items-center gap-3 sm:gap-4">
           {!signedIn ? (
             <button
               onClick={() => signIn()}
-              className="rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95 cursor-pointer"
+              className="rounded-xl bg-accent px-4 py-2.5 text-base font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95 cursor-pointer sm:px-6 sm:py-3"
             >
               Sign in
             </button>
@@ -69,8 +83,37 @@ export default function NavBar() {
               />
             </Link>
           )}
+
+          <button
+            onClick={() => setMobileMenuOpen((v) => !v)}
+            aria-label="Toggle menu"
+            aria-expanded={mobileMenuOpen}
+            className="rounded-lg p-1.5 text-foreground transition-colors hover:bg-surface-hover cursor-pointer sm:hidden"
+          >
+            <MenuIcon open={mobileMenuOpen} className="h-4 w-5" />
+          </button>
         </div>
       </div>
+
+      {mobileMenuOpen && (
+        <nav className="flex flex-col gap-1 border-t border-border-subtle px-4 py-3 sm:hidden">
+          {navItems.map((item) => {
+            const active = item.match(pathname);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`rounded-lg px-3 py-2.5 text-lg font-medium transition-colors ${
+                  active ? "bg-accent-soft text-accent-strong" : "text-muted hover:bg-surface-hover hover:text-foreground"
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+      )}
     </header>
   );
 }

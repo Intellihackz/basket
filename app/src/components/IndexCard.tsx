@@ -65,7 +65,7 @@ export default function IndexCard({
             />
           ))}
           {index.assets.length > shownLogos.length && (
-            <span className="shrink-0 font-mono text-sm text-muted">
+            <span className="shrink-0 font-mono text-base text-muted">
               +{index.assets.length - shownLogos.length}
             </span>
           )}
@@ -73,7 +73,7 @@ export default function IndexCard({
 
         {index.returnSincePublishPct !== null && (
           <span
-            className={`absolute right-3 top-3 inline-flex items-center gap-1 rounded-lg bg-surface px-2.5 py-1.5 text-sm font-semibold tabular-nums ${
+            className={`absolute right-3 top-3 inline-flex items-center gap-1 rounded-lg bg-surface px-2.5 py-1.5 text-base font-semibold tabular-nums ${
               positive ? "text-positive" : "text-negative"
             }`}
           >
@@ -91,7 +91,7 @@ export default function IndexCard({
       >
         {index.name}
       </h3>
-      <div className="mt-2 flex items-center gap-1.5 text-sm text-muted">
+      <div className="mt-2 flex items-center gap-1.5 text-base text-muted">
         <Avatar username={index.creatorUsername} size={18} />
         <span>@{index.creatorUsername}</span>
       </div>
@@ -105,12 +105,12 @@ export default function IndexCard({
         {pillTickers.map((asset) => (
           <span
             key={asset.symbol}
-            className="rounded-lg bg-surface-hover px-3 py-1.5 font-mono text-sm font-medium text-foreground"
+            className="rounded-lg bg-surface-hover px-3 py-1.5 font-mono text-base font-medium text-foreground"
           >
             {asset.symbol}
           </span>
         ))}
-        <span className="rounded-lg bg-surface-hover px-3 py-1.5 text-sm font-medium text-muted">
+        <span className="rounded-lg bg-surface-hover px-3 py-1.5 text-base font-medium text-muted">
           {index.holders.toLocaleString()} {index.holders === 1 ? "investor" : "investors"}
         </span>
       </div>

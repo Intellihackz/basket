@@ -32,7 +32,7 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_340px]">
         <div>
           <div className="animate-fade-up">
-            <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
+            <div className="flex flex-wrap items-center gap-2 text-base text-muted">
               <Link
                 href={`/u/${index.creatorUsername}`}
                 className="inline-flex items-center gap-1.5 font-medium text-foreground transition-colors hover:text-accent-strong"
@@ -59,22 +59,22 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
             style={{ animationDelay: "150ms" }}
           >
             <div>
-              <p className="font-display text-2xl font-medium tabular-nums text-foreground">
+              <p className="font-display text-3xl font-medium tabular-nums text-foreground">
                 {formatUsdFull(index.totalInvestedUsd)}
               </p>
-              <p className="text-sm text-muted">total invested</p>
+              <p className="text-base text-muted">total invested</p>
             </div>
             <div>
-              <p className="font-display text-2xl font-medium tabular-nums text-foreground">
+              <p className="font-display text-3xl font-medium tabular-nums text-foreground">
                 {index.holders.toLocaleString()}
               </p>
-              <p className="text-sm text-muted">investors</p>
+              <p className="text-base text-muted">investors</p>
             </div>
             <div>
               <p
-                className={`font-display text-2xl font-medium tabular-nums ${
+                className={`font-display text-3xl font-medium tabular-nums ${
                   index.returnSincePublishPct === null
-                    ? "text-sm text-muted"
+                    ? "text-base text-muted"
                     : index.returnSincePublishPct >= 0
                     ? "text-positive"
                     : "text-negative"
@@ -82,13 +82,13 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
               >
                 {formatReturn(index.returnSincePublishPct)}
               </p>
-              <p className="text-sm text-muted">since publish</p>
+              <p className="text-base text-muted">since publish</p>
             </div>
           </div>
 
           {/* Return since publish */}
           <div className="animate-fade-up mt-8" style={{ animationDelay: "300ms" }}>
-            <h2 className="font-display text-xl font-medium tracking-tight text-foreground mb-4">
+            <h2 className="font-display text-2xl font-medium tracking-tight text-foreground mb-4">
               Return since publish
             </h2>
             <BasketReturnChart publishedAt={index.createdAt} returnSincePublishPct={index.returnSincePublishPct} />
@@ -97,8 +97,8 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
           {/* Holdings */}
           <div className="animate-fade-up mt-8" style={{ animationDelay: "450ms" }}>
             <div className="mb-4 flex items-baseline justify-between">
-              <h2 className="font-display text-xl font-medium tracking-tight text-foreground">Holdings</h2>
-              <span className="font-mono text-xs text-muted">
+              <h2 className="font-display text-2xl font-medium tracking-tight text-foreground">Holdings</h2>
+              <span className="font-mono text-sm text-muted">
                 {index.assets.length} {index.assets.length === 1 ? "asset" : "assets"}
               </span>
             </div>

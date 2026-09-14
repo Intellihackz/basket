@@ -12,7 +12,7 @@ export default function BasketReturnChart({
 }) {
   if (returnSincePublishPct === null) {
     return (
-      <div className="flex h-32 items-center justify-center rounded-xl border border-dashed border-border-subtle text-sm text-muted">
+      <div className="flex h-32 items-center justify-center rounded-xl border border-dashed border-border-subtle text-base text-muted">
         Not enough live price data yet
       </div>
     );
@@ -48,7 +48,7 @@ export default function BasketReturnChart({
         <circle cx={startX} cy={midY} r="3" fill={lineColor} />
         <circle cx={endX} cy={endY} r="3.5" fill={lineColor} />
       </svg>
-      <div className="mt-1.5 flex items-center justify-between text-xs text-muted">
+      <div className="mt-1.5 flex items-center justify-between text-sm text-muted">
         <span>Published {new Date(publishedAt).toLocaleDateString()}</span>
         <span className={`font-mono font-semibold ${positive ? "text-positive" : "text-negative"}`}>
           {formatReturn(pct)} now

@@ -249,7 +249,7 @@ export default function ProfilePage() {
                         <PencilIcon className="h-3.5 w-3.5" />
                       </button>
                     )}
-                    <span className="rounded-lg bg-accent-soft px-3 py-1 text-sm font-semibold text-accent-strong">
+                    <span className="rounded-lg bg-accent-soft px-3 py-1 text-base font-semibold text-accent-strong">
                       Curator
                     </span>
                   </>
@@ -259,16 +259,16 @@ export default function ProfilePage() {
               {isOwnProfile && (
                 <button
                   onClick={session.signOut}
-                  className="rounded-xl border border-border-subtle px-3.5 py-1.5 text-sm font-medium text-muted transition-colors hover:border-negative hover:text-negative cursor-pointer"
+                  className="rounded-xl border border-border-subtle px-3.5 py-1.5 text-base font-medium text-muted transition-colors hover:border-negative hover:text-negative cursor-pointer"
                 >
                   Sign out
                 </button>
               )}
             </div>
 
-            {usernameError && <p className="mt-1.5 text-xs text-negative">{usernameError}</p>}
+            {usernameError && <p className="mt-1.5 text-sm text-negative">{usernameError}</p>}
 
-            <div className="mt-5 flex flex-wrap items-center gap-3 text-sm">
+            <div className="mt-5 flex flex-wrap items-center gap-3 text-base">
               <span className={`h-1.5 w-1.5 rounded-full ${walletLinked ? "bg-positive" : "bg-muted/50"}`} />
               <span className="text-muted">
                 {walletLinked ? (
@@ -287,7 +287,7 @@ export default function ProfilePage() {
               {isOwnProfile && !walletLinked && (
                 <button
                   onClick={session.linkWallet}
-                  className="rounded-xl bg-accent px-3.5 py-1.5 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95 cursor-pointer"
+                  className="rounded-xl bg-accent px-3.5 py-1.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95 cursor-pointer"
                 >
                   Connect wallet
                 </button>
@@ -297,26 +297,26 @@ export default function ProfilePage() {
             <div className="mt-6 flex flex-wrap gap-x-10 gap-y-4">
               <div>
                 <p className="font-display text-3xl font-medium tabular-nums text-foreground">{created.length}</p>
-                <p className="text-sm text-muted">baskets created</p>
+                <p className="text-base text-muted">baskets created</p>
               </div>
               <div>
                 <p className="font-display text-3xl font-medium tabular-nums text-foreground">
                   {totalHolders.toLocaleString()}
                 </p>
-                <p className="text-sm text-muted">total investors</p>
+                <p className="text-base text-muted">total investors</p>
               </div>
               <div>
                 <p className="font-display text-3xl font-medium tabular-nums text-foreground">
                   {formatUsd(totalVolume)}
                 </p>
-                <p className="text-sm text-muted">total invested</p>
+                <p className="text-base text-muted">total invested</p>
               </div>
               {best && (
                 <div>
                   <p className="font-display text-3xl font-medium tabular-nums text-positive">
                     {formatPercent(best.returnSincePublishPct!)}
                   </p>
-                  <p className="text-sm text-muted">best ({best.name})</p>
+                  <p className="text-base text-muted">best ({best.name})</p>
                 </div>
               )}
             </div>
@@ -330,7 +330,7 @@ export default function ProfilePage() {
           {isOwnProfile && (
             <button
               onClick={() => setActiveTab("portfolio")}
-              className={`border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors duration-150 cursor-pointer ${
+              className={`border-b-2 px-4 py-2.5 text-base font-semibold transition-colors duration-150 cursor-pointer ${
                 activeTab === "portfolio" ? "border-accent text-foreground" : "border-transparent text-muted hover:text-foreground"
               }`}
             >
@@ -340,7 +340,7 @@ export default function ProfilePage() {
 
           <button
             onClick={() => setActiveTab("baskets")}
-            className={`border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors duration-150 cursor-pointer ${
+            className={`border-b-2 px-4 py-2.5 text-base font-semibold transition-colors duration-150 cursor-pointer ${
               activeTab === "baskets" || !isOwnProfile
                 ? "border-accent text-foreground"
                 : "border-transparent text-muted hover:text-foreground"
@@ -354,23 +354,23 @@ export default function ProfilePage() {
           <div className="mt-6">
             {!walletLinked ? (
               <div className="flex flex-col items-start gap-3 rounded-2xl border border-border-subtle bg-surface p-7">
-                <h3 className="font-display text-lg font-medium text-foreground">Link your Solana wallet</h3>
-                <p className="max-w-md text-sm leading-relaxed text-muted">
+                <h3 className="font-display text-xl font-medium text-foreground">Link your Solana wallet</h3>
+                <p className="max-w-md text-base leading-relaxed text-muted">
                   Connect a Solana wallet to buy into baskets and track your real holdings.
                 </p>
                 <button
                   onClick={session.linkWallet}
-                  className="mt-2 rounded-xl bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95 cursor-pointer"
+                  className="mt-2 rounded-xl bg-accent px-5 py-2 text-base font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95 cursor-pointer"
                 >
                   Connect Solana wallet
                 </button>
               </div>
             ) : positions.length === 0 ? (
               <div className="flex flex-col items-start gap-3 rounded-2xl border border-border-subtle bg-surface p-7">
-                <p className="text-sm text-muted">You haven&apos;t bought into a basket yet.</p>
+                <p className="text-base text-muted">You haven&apos;t bought into a basket yet.</p>
                 <Link
                   href="/explore"
-                  className="rounded-xl bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95"
+                  className="rounded-xl bg-accent px-5 py-2 text-base font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95"
                 >
                   Explore baskets
                 </Link>
@@ -378,13 +378,13 @@ export default function ProfilePage() {
             ) : (
               <div>
                 <div className="rounded-2xl border border-border-subtle bg-surface p-6 sm:p-7">
-                  <p className="text-xs font-medium uppercase tracking-wider text-muted">Total portfolio value</p>
+                  <p className="text-sm font-medium uppercase tracking-wider text-muted">Total portfolio value</p>
                   <div className="mt-1.5 flex flex-wrap items-baseline gap-4">
                     <span className="font-display text-3xl font-medium tabular-nums text-foreground sm:text-4xl">
                       {formatUsdFull(totalPortfolioValue)}
                     </span>
                     <span
-                      className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-0.5 text-xs font-semibold tabular-nums ${
+                      className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-0.5 text-sm font-semibold tabular-nums ${
                         totalReturn >= 0 ? "bg-positive-soft text-positive" : "bg-negative-soft text-negative"
                       }`}
                     >
@@ -392,7 +392,7 @@ export default function ProfilePage() {
                       {formatUsdFull(netPnL)} ({totalReturn.toFixed(2)}%)
                     </span>
                   </div>
-                  <p className="mt-1 text-xs text-muted">
+                  <p className="mt-1 text-sm text-muted">
                     Invested capital: <strong className="text-foreground">{formatUsdFull(totalInvested)}</strong>
                   </p>
 
@@ -400,14 +400,14 @@ export default function ProfilePage() {
                     <div className="mt-6 border-t border-border-subtle pt-6">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <div>
-                          <h4 className="font-display text-base font-medium text-foreground">
+                          <h4 className="font-display text-lg font-medium text-foreground">
                             Underlying exposure
                           </h4>
-                          <p className="text-xs text-muted">
+                          <p className="text-sm text-muted">
                             Net aggregated equity exposure across all {positions.length} active baskets
                           </p>
                         </div>
-                        <span className="text-[11px] font-mono font-medium text-muted bg-surface-hover px-2.5 py-1 rounded-lg self-start sm:self-auto">
+                        <span className="text-xs font-mono font-medium text-muted bg-surface-hover px-2.5 py-1 rounded-lg self-start sm:self-auto">
                           {underlyingStocks.length} companies
                         </span>
                       </div>
@@ -432,7 +432,7 @@ export default function ProfilePage() {
                           return (
                             <span
                               key={stock.symbol}
-                              className="inline-flex items-center gap-2 rounded-lg bg-surface-hover px-2.5 py-1.5 text-xs"
+                              className="inline-flex items-center gap-2 rounded-lg bg-surface-hover px-2.5 py-1.5 text-sm"
                             >
                               <CompanyLogo symbol={stock.symbol} size={18} />
                               <span className="font-mono font-bold text-foreground">{stock.symbol}</span>
@@ -445,7 +445,7 @@ export default function ProfilePage() {
                   )}
                 </div>
 
-                <h3 className="font-display mt-8 text-lg font-medium text-foreground">Active positions</h3>
+                <h3 className="font-display mt-8 text-xl font-medium text-foreground">Active positions</h3>
 
                 <div className="mt-4 space-y-3">
                   {positions.map((p) => {
@@ -459,15 +459,15 @@ export default function ProfilePage() {
                             <div className="flex items-center gap-2">
                               <Link
                                 href={`/index/${p.indexId}`}
-                                className="font-display text-lg font-medium text-foreground hover:text-accent transition-colors"
+                                className="font-display text-xl font-medium text-foreground hover:text-accent transition-colors"
                               >
                                 {p.indexName}
                               </Link>
-                              <span className="rounded-lg bg-surface-hover px-2 py-0.5 font-mono text-[10px] font-medium text-muted">
+                              <span className="rounded-lg bg-surface-hover px-2 py-0.5 font-mono text-xs font-medium text-muted">
                                 {p.assets.length} stocks
                               </span>
                             </div>
-                            <p className="mt-1 text-xs text-muted">
+                            <p className="mt-1 text-sm text-muted">
                               Cost basis: {formatUsdFull(p.investedUsd)} • Acquired {new Date(p.purchasedAt).toLocaleDateString()}
                             </p>
                           </div>
@@ -477,7 +477,7 @@ export default function ProfilePage() {
                               <p className="font-display text-xl font-medium tabular-nums text-foreground">
                                 {formatUsdFull(p.currentValueUsd)}
                               </p>
-                              <p className={`text-xs font-semibold tabular-nums ${returnPct >= 0 ? "text-positive" : "text-negative"}`}>
+                              <p className={`text-sm font-semibold tabular-nums ${returnPct >= 0 ? "text-positive" : "text-negative"}`}>
                                 {returnPct >= 0 ? "+" : ""}
                                 {formatUsdFull(posGain)} ({returnPct.toFixed(2)}%)
                               </p>
@@ -485,7 +485,7 @@ export default function ProfilePage() {
 
                             <Link
                               href={`/index/${p.indexId}`}
-                              className="rounded-xl bg-accent-soft px-3.5 py-1.5 text-xs font-semibold text-accent-strong hover:bg-accent hover:text-accent-foreground transition-colors"
+                              className="rounded-xl bg-accent-soft px-3.5 py-1.5 text-sm font-semibold text-accent-strong hover:bg-accent hover:text-accent-foreground transition-colors"
                             >
                               Invest more
                             </Link>
@@ -508,13 +508,13 @@ export default function ProfilePage() {
           <div className="mt-6">
             {created.length === 0 ? (
               <div className="flex flex-col items-start gap-3 rounded-2xl border border-border-subtle bg-surface p-7">
-                <p className="text-sm text-muted">
+                <p className="text-base text-muted">
                   {isOwnProfile ? "You haven't published a basket yet." : `@${routeUsername} hasn't published a basket yet.`}
                 </p>
                 {isOwnProfile && (
                   <Link
                     href="/create"
-                    className="rounded-xl bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95"
+                    className="rounded-xl bg-accent px-5 py-2 text-base font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-95"
                   >
                     Create a basket
                   </Link>

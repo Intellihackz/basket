@@ -72,10 +72,10 @@ export default function StockDetailModal({
       >
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <CompanyLogo symbol={asset.symbol} size={44} />
+            <CompanyLogo symbol={asset.symbol} size={48} />
             <div>
-              <p className="font-mono text-base font-bold text-foreground">{asset.symbol}</p>
-              <p className="text-sm text-muted">{asset.name}</p>
+              <p className="font-mono text-lg font-bold text-foreground">{asset.symbol}</p>
+              <p className="text-base text-muted">{asset.name}</p>
             </div>
           </div>
           <button
@@ -88,31 +88,31 @@ export default function StockDetailModal({
         </div>
 
         {asset.isTradingHalted && (
-          <span className="mt-4 inline-block rounded-lg bg-negative-soft px-2.5 py-1 text-xs font-semibold text-negative">
+          <span className="mt-4 inline-block rounded-lg bg-negative-soft px-2.5 py-1 text-sm font-semibold text-negative">
             Trading halted
           </span>
         )}
 
         <div className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-border-subtle pt-4">
           <div>
-            <p className="text-xs text-muted">Live price</p>
-            <p className="font-display text-2xl font-medium tabular-nums text-foreground">
+            <p className="text-sm text-muted">Live price</p>
+            <p className="font-display text-3xl font-medium tabular-nums text-foreground">
               {livePrice !== undefined ? `$${livePrice.toFixed(2)}` : "N/A"}
             </p>
           </div>
           <div>
-            <p className="text-xs text-muted">Weight in this basket</p>
-            <p className="font-display text-2xl font-medium tabular-nums text-foreground">
+            <p className="text-sm text-muted">Weight in this basket</p>
+            <p className="font-display text-3xl font-medium tabular-nums text-foreground">
               {(asset.weightBps / 100).toFixed(0)}%
             </p>
           </div>
           {returnSincePublishPct !== undefined && (
             <div>
-              <p className="text-xs text-muted">Since basket publish</p>
+              <p className="text-sm text-muted">Since basket publish</p>
               <p
-                className={`font-display text-2xl font-medium tabular-nums ${
+                className={`font-display text-3xl font-medium tabular-nums ${
                   returnSincePublishPct === null
-                    ? "text-sm text-muted"
+                    ? "text-base text-muted"
                     : returnSincePublishPct >= 0
                     ? "text-positive"
                     : "text-negative"
@@ -129,7 +129,7 @@ export default function StockDetailModal({
             href={`https://jup.ag/tokens/${asset.mint}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-border-subtle py-2.5 text-sm font-medium text-foreground transition-colors hover:border-foreground/20 hover:bg-surface-hover"
+            className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-border-subtle py-2.5 text-base font-medium text-foreground transition-colors hover:border-foreground/20 hover:bg-surface-hover"
           >
             View chart on Jupiter
             <ExternalLinkIcon className="h-2.5 w-2.5" />
@@ -139,18 +139,18 @@ export default function StockDetailModal({
         {asset.mint && (
           <div className="mt-3 flex items-center justify-between rounded-xl border border-border-subtle p-3">
             <div className="min-w-0">
-              <p className="text-xs text-muted">Solana Token-2022 mint</p>
-              <p className="font-mono text-xs font-medium text-foreground truncate">{asset.mint}</p>
+              <p className="text-sm text-muted">Solana Token-2022 mint</p>
+              <p className="font-mono text-sm font-medium text-foreground truncate">{asset.mint}</p>
             </div>
             <div className="flex shrink-0 items-center gap-3 pl-3">
-              <button onClick={copyMint} className="text-xs font-medium text-accent hover:underline cursor-pointer">
+              <button onClick={copyMint} className="text-sm font-medium text-accent hover:underline cursor-pointer">
                 {copied ? "Copied" : "Copy"}
               </button>
               <a
                 href={`https://solscan.io/token/${asset.mint}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+                className="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline"
               >
                 Solscan
                 <ExternalLinkIcon className="h-2 w-2" />

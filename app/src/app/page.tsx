@@ -13,7 +13,7 @@ export default function LandingPage() {
             <span className="font-display text-2xl italic text-foreground">Basket</span>
             <Link
               href="/explore"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-all hover:-translate-y-0.5 hover:bg-accent-strong"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-5 py-2.5 text-base font-semibold text-accent-foreground transition-all hover:-translate-y-0.5 hover:bg-accent-strong"
             >
               Open app
             </Link>
@@ -25,7 +25,7 @@ export default function LandingPage() {
               <br />
               Invest in any basket.
             </h1>
-            <p className="mx-auto mt-6 max-w-[58ch] text-base leading-relaxed text-foreground/70 sm:text-lg">
+            <p className="mx-auto mt-6 max-w-[58ch] text-lg leading-relaxed text-foreground/70 sm:text-xl">
               <span className="text-foreground">
                 A community-curated marketplace for stock baskets built from tokenized equities on
                 Solana.

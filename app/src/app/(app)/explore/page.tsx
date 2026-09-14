@@ -162,7 +162,7 @@ export default function ExplorePage() {
         <div className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_24px,black_calc(100%-24px),transparent)]">
           <div className="flex w-max animate-marquee items-center gap-6">
             {[...TICKER_SYMBOLS, ...TICKER_SYMBOLS].map((symbol, i) => (
-              <div key={`${symbol}-${i}`} className="flex items-center gap-2 text-xs font-mono">
+              <div key={`${symbol}-${i}`} className="flex items-center gap-2 text-sm font-mono">
                 <CompanyLogo symbol={symbol} size={15} />
                 <span className="font-semibold text-foreground">{symbol}</span>
                 <span className="text-muted">
@@ -190,10 +190,10 @@ export default function ExplorePage() {
       {/* All Baskets */}
       <div id="baskets" className="mt-12 scroll-mt-24 animate-fade-up" style={{ animationDelay: "300ms" }}>
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-2xl font-medium tracking-tight text-foreground">Baskets</h2>
+          <h2 className="font-display text-3xl font-medium tracking-tight text-foreground">Baskets</h2>
           <Link
             href="/create"
-            className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-base font-semibold text-accent-foreground transition-colors hover:bg-accent-strong"
           >
             <PlusIcon className="h-3.5 w-3.5" />
             Create a basket
@@ -207,7 +207,7 @@ export default function ExplorePage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search baskets, tickers, or creators..."
-              className="w-full rounded-xl border border-border-subtle bg-surface px-3.5 py-2 pl-9 text-sm outline-none transition-colors placeholder:text-muted/70"
+              className="w-full rounded-xl border border-border-subtle bg-surface px-3.5 py-2 pl-9 text-base outline-none transition-colors placeholder:text-muted/70"
             />
             <svg
               className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted"
@@ -237,7 +237,7 @@ export default function ExplorePage() {
               <button
                 type="button"
                 onClick={() => setAssetFilterOpen(!assetFilterOpen)}
-                className={`flex items-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-semibold transition-colors cursor-pointer ${
+                className={`flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold transition-colors cursor-pointer ${
                   selectedAssets.length > 0
                     ? "border-accent bg-accent-soft text-accent-strong"
                     : "border-border-subtle bg-surface text-foreground hover:border-foreground/20"
@@ -262,12 +262,12 @@ export default function ExplorePage() {
               {assetFilterOpen && (
                 <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-72 sm:w-80 rounded-2xl border border-border-subtle bg-surface p-3.5 shadow-lg z-50">
                   <div className="flex items-center justify-between pb-2.5 border-b border-border-subtle">
-                    <span className="text-xs font-semibold text-foreground">Filter by constituent stocks</span>
+                    <span className="text-sm font-semibold text-foreground">Filter by constituent stocks</span>
                     {selectedAssets.length > 0 && (
                       <button
                         type="button"
                         onClick={() => setSelectedAssets([])}
-                        className="text-[11px] font-medium text-accent hover:underline cursor-pointer"
+                        className="text-xs font-medium text-accent hover:underline cursor-pointer"
                       >
                         Clear all
                       </button>
@@ -280,20 +280,20 @@ export default function ExplorePage() {
                       value={stockSearch}
                       onChange={(e) => setStockSearch(e.target.value)}
                       placeholder="Search stocks (e.g. NVDA, AAPL)..."
-                      className="w-full rounded-lg border border-border-subtle bg-background px-3 py-1.5 text-xs outline-none"
+                      className="w-full rounded-lg border border-border-subtle bg-background px-3 py-1.5 text-sm outline-none"
                     />
                   </div>
 
                   <div className="mt-2 max-h-56 overflow-y-auto space-y-0.5 pr-1">
                     {filteredStocks.length === 0 ? (
-                      <p className="py-4 text-center text-xs text-muted">No matching stocks</p>
+                      <p className="py-4 text-center text-sm text-muted">No matching stocks</p>
                     ) : (
                       filteredStocks.map((stock) => {
                         const isChecked = selectedAssets.includes(stock.symbol);
                         return (
                           <label
                             key={stock.symbol}
-                            className={`flex items-center justify-between gap-2.5 rounded-lg px-2.5 py-1.5 text-xs cursor-pointer transition-colors ${
+                            className={`flex items-center justify-between gap-2.5 rounded-lg px-2.5 py-1.5 text-sm cursor-pointer transition-colors ${
                               isChecked
                                 ? "bg-accent-soft text-accent-strong font-medium"
                                 : "hover:bg-surface-hover text-foreground"
@@ -309,7 +309,7 @@ export default function ExplorePage() {
                               <CompanyLogo symbol={stock.symbol} size={18} />
                               <span className="font-mono font-semibold text-foreground">{stock.symbol}</span>
                             </div>
-                            <span className="font-mono text-[11px] text-muted shrink-0">
+                            <span className="font-mono text-xs text-muted shrink-0">
                               {stock.count} {stock.count === 1 ? "basket" : "baskets"}
                             </span>
                           </label>
@@ -319,11 +319,11 @@ export default function ExplorePage() {
                   </div>
 
                   <div className="mt-3 flex items-center justify-between border-t border-border-subtle pt-2.5">
-                    <span className="text-[11px] text-muted font-mono">{selectedAssets.length} selected</span>
+                    <span className="text-xs text-muted font-mono">{selectedAssets.length} selected</span>
                     <button
                       type="button"
                       onClick={() => setAssetFilterOpen(false)}
-                      className="rounded-lg bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground hover:bg-accent-strong cursor-pointer"
+                      className="rounded-lg bg-accent px-3 py-1 text-sm font-semibold text-accent-foreground hover:bg-accent-strong cursor-pointer"
                     >
                       Done
                     </button>
@@ -336,7 +336,7 @@ export default function ExplorePage() {
               <select
                 value={sortId}
                 onChange={(e) => setSortId(e.target.value as SortId)}
-                className="appearance-none rounded-xl border border-border-subtle bg-surface px-3.5 py-2 pr-7 text-xs font-medium text-foreground outline-none transition-colors hover:border-foreground/20 cursor-pointer"
+                className="appearance-none rounded-xl border border-border-subtle bg-surface px-3.5 py-2 pr-7 text-sm font-medium text-foreground outline-none transition-colors hover:border-foreground/20 cursor-pointer"
               >
                 {SORTS.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -354,7 +354,7 @@ export default function ExplorePage() {
                   setSelectedAssets([]);
                   setSearchQuery("");
                 }}
-                className="rounded-xl border border-border-subtle px-2.5 py-1.5 text-xs font-medium text-muted hover:text-foreground transition-colors cursor-pointer"
+                className="rounded-xl border border-border-subtle px-2.5 py-1.5 text-sm font-medium text-muted hover:text-foreground transition-colors cursor-pointer"
                 title="Reset all filters"
               >
                 Reset
@@ -365,13 +365,13 @@ export default function ExplorePage() {
 
         {selectedAssets.length > 0 && (
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className="text-xs text-muted font-medium">Baskets holding:</span>
+            <span className="text-sm text-muted font-medium">Baskets holding:</span>
             {selectedAssets.map((symbol) => (
               <button
                 key={symbol}
                 type="button"
                 onClick={() => toggleAsset(symbol)}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent-soft px-2.5 py-1 text-xs font-semibold text-accent-strong hover:bg-accent hover:text-accent-foreground transition-colors group cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent-soft px-2.5 py-1 text-sm font-semibold text-accent-strong hover:bg-accent hover:text-accent-foreground transition-colors group cursor-pointer"
               >
                 <CompanyLogo symbol={symbol} size={14} />
                 <span>{symbol}</span>
@@ -381,7 +381,7 @@ export default function ExplorePage() {
             <button
               type="button"
               onClick={() => setSelectedAssets([])}
-              className="text-xs text-muted hover:text-foreground underline decoration-border-subtle font-medium ml-1 cursor-pointer"
+              className="text-sm text-muted hover:text-foreground underline decoration-border-subtle font-medium ml-1 cursor-pointer"
             >
               Clear all
             </button>
@@ -390,14 +390,14 @@ export default function ExplorePage() {
 
         {loading ? (
           <div className="mt-8 flex flex-col items-center justify-center rounded-2xl border border-border-subtle p-12 text-center">
-            <p className="text-sm text-muted">Loading baskets...</p>
+            <p className="text-base text-muted">Loading baskets...</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="mt-8 flex flex-col items-center justify-center rounded-2xl border border-dashed border-border-subtle p-12 text-center">
-            <p className="font-display text-lg text-foreground">
+            <p className="font-display text-xl text-foreground">
               {indexes.length === 0 ? "No baskets published yet" : "No baskets found"}
             </p>
-            <p className="mt-1 max-w-sm text-sm text-muted">
+            <p className="mt-1 max-w-sm text-base text-muted">
               {indexes.length === 0
                 ? "Be the first to publish a basket."
                 : selectedAssets.length > 0
@@ -408,7 +408,7 @@ export default function ExplorePage() {
             </p>
             <Link
               href="/create"
-              className="mt-4 rounded-xl bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-strong cursor-pointer"
+              className="mt-4 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong cursor-pointer"
             >
               {indexes.length === 0 ? "Create a basket" : "Clear all filters"}
             </Link>

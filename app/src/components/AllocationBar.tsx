@@ -96,17 +96,17 @@ export default function AllocationBar({
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <CompanyLogo symbol={a.symbol} size={28} />
+                  <CompanyLogo symbol={a.symbol} size={32} />
                   <div className="truncate">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-foreground text-sm">{a.symbol}</span>
+                      <span className="font-mono font-bold text-foreground text-base">{a.symbol}</span>
                       {mint && (
                         <a
                           href={`https://solscan.io/token/${mint}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border-subtle/80 bg-surface px-1.5 py-0.2 font-mono text-[10px] text-muted hover:border-foreground/20 hover:text-foreground transition-colors"
+                          className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border-subtle/80 bg-surface px-1.5 py-0.2 font-mono text-xs text-muted hover:border-foreground/20 hover:text-foreground transition-colors"
                           title={`Solana Token-2022 Mint: ${mint}`}
                         >
                           <span>{mint.slice(0, 4)}...{mint.slice(-4)}</span>
@@ -114,21 +114,21 @@ export default function AllocationBar({
                         </a>
                       )}
                     </div>
-                    <span className="text-xs text-muted truncate block">{a.name}</span>
+                    <span className="text-sm text-muted truncate block">{a.name}</span>
                   </div>
                 </div>
 
                 <div className="text-right ml-3 shrink-0">
-                  <span className="font-display font-bold text-sm text-foreground block">
+                  <span className="font-display font-bold text-base text-foreground block">
                     {(a.weightBps / 100).toFixed(0)}%
                   </span>
                   <div className="flex items-center justify-end gap-1.5">
                     {livePrice !== undefined && (
-                      <span className="text-[11px] font-mono font-medium text-muted">${livePrice.toFixed(2)}</span>
+                      <span className="text-xs font-mono font-medium text-muted">${livePrice.toFixed(2)}</span>
                     )}
                     {assetReturn !== null && (
                       <span
-                        className={`inline-flex items-center gap-0.5 text-[11px] font-mono font-semibold ${
+                        className={`inline-flex items-center gap-0.5 text-xs font-mono font-semibold ${
                           assetReturn >= 0 ? "text-positive" : "text-negative"
                         }`}
                       >

@@ -152,14 +152,14 @@ export default function WeightEditor({
       {/* Quick starter chips */}
       {assets.length === 0 && (
         <div className="mb-4">
-          <p className="text-xs font-medium text-muted">Or start with a curated template:</p>
+          <p className="text-sm font-medium text-muted">Or start with a curated template:</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {QUICK_STARTERS.map((qs) => (
               <button
                 key={qs.label}
                 type="button"
                 onClick={() => onChange(qs.assets)}
-                className="rounded-lg border border-border-subtle bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-all hover:border-accent hover:text-accent active:scale-95"
+                className="rounded-lg border border-border-subtle bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-all hover:border-accent hover:text-accent active:scale-95"
               >
                 + {qs.label}
               </button>
@@ -174,7 +174,7 @@ export default function WeightEditor({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search 798 tokenized equities (e.g. NVDA, AAPL, MSTR, PLTR, SpaceX)..."
-          className="w-full rounded-xl border border-border-subtle bg-background px-4 py-2.5 text-sm outline-none transition-all placeholder:text-muted/70"
+          className="w-full rounded-xl border border-border-subtle bg-background px-4 py-2.5 text-base outline-none transition-all placeholder:text-muted/70"
         />
         {results.length > 0 && query.trim().length > 0 && (
           <ul className="elevated absolute z-20 mt-1.5 max-h-72 w-full overflow-y-auto rounded-xl border border-border-subtle bg-surface shadow-xl">
@@ -183,21 +183,21 @@ export default function WeightEditor({
                 <button
                   type="button"
                   onClick={() => addAsset(a.underlyingSymbol, a.name)}
-                  className="flex w-full items-center justify-between px-4 py-2.5 text-left text-xs transition-colors hover:bg-surface-hover cursor-pointer"
+                  className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors hover:bg-surface-hover cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <CompanyLogo symbol={a.underlyingSymbol} size={22} />
+                    <CompanyLogo symbol={a.underlyingSymbol} size={26} />
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-mono font-bold text-foreground">{a.underlyingSymbol}</span>
-                        <span className="font-mono text-[10px] text-muted">
+                        <span className="font-mono text-xs text-muted">
                           {a.mint.slice(0, 4)}...{a.mint.slice(-4)}
                         </span>
                       </div>
-                      <p className="truncate text-xs text-muted">{a.name}</p>
+                      <p className="truncate text-sm text-muted">{a.name}</p>
                     </div>
                   </div>
-                  <span className="rounded-md bg-accent-soft px-2 py-0.5 text-[11px] font-semibold text-accent-strong shrink-0 ml-2">
+                  <span className="rounded-md bg-accent-soft px-2 py-0.5 text-xs font-semibold text-accent-strong shrink-0 ml-2">
                     + Add
                   </span>
                 </button>
@@ -210,7 +210,7 @@ export default function WeightEditor({
       {/* Selected Assets List */}
       {assets.length > 0 && (
         <div className="mt-4 space-y-2.5">
-          <div className="flex items-center justify-between text-xs text-muted">
+          <div className="flex items-center justify-between text-sm text-muted">
             <span>{assets.length} selected equities</span>
             <div className="flex items-center gap-3">
               <button
@@ -261,12 +261,12 @@ export default function WeightEditor({
                 <span className="shrink-0 cursor-grab text-muted/60 hover:text-muted active:cursor-grabbing" aria-label="Drag to reorder">
                   <GripIcon className="h-4 w-2.5" />
                 </span>
-                <CompanyLogo symbol={a.symbol} size={24} />
+                <CompanyLogo symbol={a.symbol} size={28} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="truncate font-mono font-bold text-sm text-foreground">{a.symbol}</span>
+                    <span className="truncate font-mono font-bold text-base text-foreground">{a.symbol}</span>
                     {findXStock(a.symbol)?.mint && (
-                      <span className="font-mono text-[10px] text-muted hidden sm:inline">
+                      <span className="font-mono text-xs text-muted hidden sm:inline">
                         {findXStock(a.symbol)!.mint.slice(0, 4)}...{findXStock(a.symbol)!.mint.slice(-4)}
                       </span>
                     )}
@@ -275,7 +275,7 @@ export default function WeightEditor({
                       style={{ backgroundColor: chartColor(i) }}
                     />
                   </div>
-                  <p className="truncate text-xs text-muted">{a.name}</p>
+                  <p className="truncate text-sm text-muted">{a.name}</p>
                 </div>
 
                 {/* Weight slider & input */}
@@ -297,9 +297,9 @@ export default function WeightEditor({
                     onChange={(e) => updateWeight(a.symbol, Number(e.target.value) || 0)}
                     onKeyDown={blockInvalidNumberKeys}
                     onWheel={blurOnWheel}
-                    className="w-14 rounded-lg border border-border-subtle bg-surface px-2 py-1 text-right font-mono text-sm font-bold outline-none"
+                    className="w-16 rounded-lg border border-border-subtle bg-surface px-2 py-1.5 text-right font-mono text-base font-bold outline-none"
                   />
-                  <span className="font-mono text-xs text-muted">%</span>
+                  <span className="font-mono text-sm text-muted">%</span>
                 </div>
 
                 <button
@@ -327,7 +327,7 @@ export default function WeightEditor({
           />
         </div>
 
-        <div className="mt-2 flex items-center justify-between text-xs">
+        <div className="mt-2 flex items-center justify-between text-sm">
           <span className="text-muted">Target allocation: 100%</span>
           <span
             className={`inline-flex items-center gap-1 font-mono font-semibold ${

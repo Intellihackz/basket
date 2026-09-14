@@ -43,8 +43,8 @@ export function CompanyLogo({
 
   return (
     <div
-      className={`inline-flex shrink-0 items-center justify-center border border-border-subtle bg-surface-hover font-mono text-[10px] font-bold text-foreground shadow-2xs ${className}`}
-      style={{ width: size, height: size, borderRadius: radius }}
+      className={`inline-flex shrink-0 items-center justify-center border border-border-subtle bg-surface-hover font-mono font-bold text-foreground shadow-2xs ${className}`}
+      style={{ width: size, height: size, borderRadius: radius, fontSize: Math.max(9, Math.round(size * 0.32)) }}
       title={name}
     >
       {symbol.replace(/x$/i, "").slice(0, 2)}
@@ -71,10 +71,10 @@ export default function TickerChip({
       style={{ transform: rotate ? `rotate(${rotate}deg)` : undefined }}
     >
       <CompanyLogo symbol={symbol} size={18} />
-      <span className="font-mono text-xs font-bold text-foreground">{symbol}</span>
+      <span className="font-mono text-sm font-bold text-foreground">{symbol}</span>
       {pct && (
         <span
-          className={`font-mono text-[11px] font-semibold tabular-nums ${
+          className={`font-mono text-xs font-semibold tabular-nums ${
             positive ? "text-positive" : "text-negative"
           }`}
         >

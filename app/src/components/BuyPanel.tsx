@@ -140,8 +140,8 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
   return (
     <div className="rounded-2xl border border-border-subtle bg-surface p-6">
       <div className="flex items-center justify-between">
-        <h3 className="font-display text-lg font-medium tracking-tight text-foreground">Invest in basket</h3>
-        <div className="inline-flex rounded-lg border border-border-subtle p-0.5 text-xs font-medium">
+        <h3 className="font-display text-xl font-medium tracking-tight text-foreground">Invest in basket</h3>
+        <div className="inline-flex rounded-lg border border-border-subtle p-0.5 text-sm font-medium">
           <button
             onClick={() => {
               setCurrency("USDC");
@@ -167,13 +167,13 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
         </div>
       </div>
 
-      <p className="mt-1 text-sm text-muted">
+      <p className="mt-1 text-base text-muted">
         Routes proportional tokenized stock purchases in a single Solana transaction.
       </p>
 
       {/* Amount input */}
       <div className="mt-5">
-        <div className="flex items-center justify-between text-xs font-medium uppercase tracking-wider text-muted">
+        <div className="flex items-center justify-between text-sm font-medium uppercase tracking-wider text-muted">
           <span>Amount ({currency})</span>
           {currency === "SOL" ? (
             <span className="font-mono text-foreground font-normal">≈ {formatUsdFull(amountNum * 154.2)}</span>
@@ -183,7 +183,7 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
         </div>
 
         <div className="mt-1.5 flex items-center gap-2 rounded-xl border border-border-subtle bg-background px-4 py-3 transition-colors">
-          <span className="text-xl font-semibold text-foreground/60">{currency === "USDC" ? "$" : "◎"}</span>
+          <span className="text-2xl font-semibold text-foreground/60">{currency === "USDC" ? "$" : "◎"}</span>
           <input
             type="number"
             min="0.01"
@@ -192,10 +192,10 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
             onChange={(e) => setAmount(e.target.value)}
             onKeyDown={blockInvalidNumberKeys}
             onWheel={blurOnWheel}
-            className="w-full bg-transparent text-xl font-bold tracking-tight outline-none font-mono"
+            className="w-full bg-transparent text-2xl font-bold tracking-tight outline-none font-mono"
             placeholder="0"
           />
-          <span className="font-mono text-xs font-semibold text-foreground">{currency}</span>
+          <span className="font-mono text-sm font-semibold text-foreground">{currency}</span>
         </div>
 
         <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1">
@@ -203,7 +203,7 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
             <button
               key={preset}
               onClick={() => setAmount(preset.toString())}
-              className={`flex-1 rounded-lg border py-1 text-xs font-semibold transition-colors cursor-pointer ${
+              className={`flex-1 rounded-lg border py-1 text-sm font-semibold transition-colors cursor-pointer ${
                 amountNum === preset
                   ? "border-accent bg-accent-soft text-accent-strong"
                   : "border-border-subtle text-muted hover:border-foreground/20 hover:text-foreground"
@@ -217,7 +217,7 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
 
       {/* Shared across stocks */}
       <div className="mt-5 border-t border-border-subtle pt-4">
-        <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted">
+        <div className="flex items-center justify-between text-sm font-semibold uppercase tracking-wider text-muted">
           <span>Shared across stocks</span>
           <span className="font-mono text-foreground">
             {amountNum > 0 ? (currency === "USDC" ? `$${amountNum.toFixed(2)}` : `${amountNum} SOL`) : "$0.00"}
@@ -240,12 +240,12 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
             const weightPct = asset.weightBps / 100;
             const shareValue = (amountNum * weightPct) / 100;
             return (
-              <li key={asset.symbol} className="flex items-center justify-between text-xs">
+              <li key={asset.symbol} className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2 min-w-0">
                   <CompanyLogo symbol={asset.symbol} size={18} />
                   <div className="flex items-baseline gap-1.5 truncate">
                     <span className="font-mono font-bold text-foreground">{asset.symbol}</span>
-                    <span className="font-mono text-[10px] text-muted">({weightPct.toFixed(0)}%)</span>
+                    <span className="font-mono text-xs text-muted">({weightPct.toFixed(0)}%)</span>
                   </div>
                 </div>
                 <div className="text-right font-mono font-semibold tabular-nums text-foreground">
@@ -258,7 +258,7 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
       </div>
 
       {/* Execution details */}
-      <div className="mt-4 space-y-1.5 border-t border-border-subtle pt-3.5 text-xs">
+      <div className="mt-4 space-y-1.5 border-t border-border-subtle pt-3.5 text-sm">
         <div className="flex items-center justify-between text-muted">
           <span>Protocol fee</span>
           <span className="font-semibold text-positive">0% ($0.00)</span>
@@ -270,7 +270,7 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
       </div>
 
       {isExecuting && (
-        <div className="mt-4 rounded-xl border border-accent/30 bg-accent-soft p-3.5 text-xs text-accent-strong">
+        <div className="mt-4 rounded-xl border border-accent/30 bg-accent-soft p-3.5 text-sm text-accent-strong">
           <div className="flex items-center justify-between font-semibold">
             <span className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
@@ -283,22 +283,22 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
       )}
 
       {status.step === "error" && (
-        <div className="mt-4 rounded-xl border border-negative/30 bg-negative-soft p-3.5 text-xs text-negative">
+        <div className="mt-4 rounded-xl border border-negative/30 bg-negative-soft p-3.5 text-sm text-negative">
           {status.message}
         </div>
       )}
 
       {status.step === "confirmed" && (
-        <div className="mt-4 rounded-xl border border-positive/30 bg-positive-soft p-3.5 text-xs text-positive space-y-1.5">
+        <div className="mt-4 rounded-xl border border-positive/30 bg-positive-soft p-3.5 text-sm text-positive space-y-1.5">
           <div className="flex items-center gap-1.5 font-semibold">
             <CheckIcon className="h-2.5 w-2.5" />
             <span>Transaction confirmed on Solana</span>
           </div>
-          <p className="text-[11px] text-positive/90">Minted proportional basket tokens into your linked wallet.</p>
+          <p className="text-xs text-positive/90">Minted proportional basket tokens into your linked wallet.</p>
           {status.signatures.map((sig) => (
             <div
               key={sig}
-              className="mt-1 flex items-center justify-between font-mono text-[10px] text-positive/80 border-t border-positive/20 pt-1.5"
+              className="mt-1 flex items-center justify-between font-mono text-xs text-positive/80 border-t border-positive/20 pt-1.5"
             >
               <span>Tx: {sig.slice(0, 8)}…{sig.slice(-8)}</span>
               <a
@@ -318,12 +318,12 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
       <div className="mt-5">
         {signedIn && !walletLinked ? (
           <div className="rounded-xl border border-accent/20 bg-accent-soft p-4">
-            <p className="text-xs leading-relaxed text-accent-strong">
+            <p className="text-sm leading-relaxed text-accent-strong">
               Connect your Solana wallet to execute onchain orders with real tokens.
             </p>
             <button
               onClick={linkWallet}
-              className="mt-3 w-full rounded-xl bg-accent py-2.5 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-[0.98]"
+              className="mt-3 w-full rounded-xl bg-accent py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-[0.98]"
             >
               Connect Solana wallet
             </button>
@@ -332,7 +332,7 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
           <button
             onClick={handleBuyClick}
             disabled={amountNum <= 0 || isExecuting}
-            className="w-full rounded-xl bg-accent py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-[0.98] disabled:opacity-40 disabled:active:scale-100"
+            className="w-full rounded-xl bg-accent py-3 text-base font-semibold text-accent-foreground transition-colors hover:bg-accent-strong active:scale-[0.98] disabled:opacity-40 disabled:active:scale-100"
           >
             {isExecuting
               ? "Executing on Solana..."
