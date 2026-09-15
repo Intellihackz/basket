@@ -140,7 +140,7 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
   return (
     <div className="rounded-2xl border border-border-subtle bg-surface p-6">
       <div className="flex items-center justify-between">
-        <h3 className="font-display text-xl font-medium tracking-tight text-foreground">Invest in basket</h3>
+        <h3 className="font-display text-xl font-medium tracking-tight text-foreground">Buy this basket</h3>
         <div className="inline-flex rounded-lg border border-border-subtle p-0.5 text-sm font-medium">
           <button
             onClick={() => {
@@ -338,7 +338,7 @@ export default function BuyPanel({ indexId, assets }: { indexId: string; assets:
               ? "Executing on Solana..."
               : signedIn
               ? `Buy basket for ${currency === "USDC" ? `$${amountNum}` : `${amountNum} SOL`}`
-              : "Sign in to invest"}
+              : "Sign in to buy"}
           </button>
         )}
       </div>

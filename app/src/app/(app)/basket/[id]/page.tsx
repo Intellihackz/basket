@@ -4,7 +4,6 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { indexes } from "@/lib/db/schema";
 import { hydrateIndexes } from "@/lib/db/index-stats";
-import { formatUsdFull } from "@/lib/mock-data";
 import { findXStock } from "@/lib/xstocks/registry";
 import AllocationBar from "@/components/AllocationBar";
 import BuyPanel from "@/components/BuyPanel";
@@ -17,7 +16,7 @@ function formatReturn(pct: number | null): string {
   return `${sign}${pct.toFixed(2)}%`;
 }
 
-export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
+export default async function BasketDetailPage(props: PageProps<"/basket/[id]">) {
   const { id } = await props.params;
   const rows = await db.select().from(indexes).where(eq(indexes.id, id));
   if (rows.length === 0) notFound();
@@ -43,7 +42,7 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
               <span>•</span>
               <span>Published {new Date(index.createdAt).toLocaleDateString()}</span>
               <span>•</span>
-              <span>{index.holders.toLocaleString()} investors</span>
+              <span>{index.holders.toLocaleString()} bought this basket</span>
             </div>
 
             <h1 className="mt-2 font-display text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
@@ -60,15 +59,9 @@ export default async function IndexDetailPage(props: PageProps<"/index/[id]">) {
           >
             <div>
               <p className="font-display text-3xl font-medium tabular-nums text-foreground">
-                {formatUsdFull(index.totalInvestedUsd)}
-              </p>
-              <p className="text-base text-muted">total invested</p>
-            </div>
-            <div>
-              <p className="font-display text-3xl font-medium tabular-nums text-foreground">
                 {index.holders.toLocaleString()}
               </p>
-              <p className="text-base text-muted">investors</p>
+              <p className="text-base text-muted">bought this basket</p>
             </div>
             <div>
               <p

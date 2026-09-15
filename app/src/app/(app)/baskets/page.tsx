@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { PublicIndex } from "@/lib/db/index-stats";
-import { formatUsd, formatUsdFull, formatPercent } from "@/lib/mock-data";
+import { formatUsdFull, formatPercent } from "@/lib/mock-data";
 import type { WalletHoldingWithValue } from "@/app/api/wallet/holdings/route";
 import IndexCard from "@/components/IndexCard";
 import { CompanyLogo } from "@/components/TickerChip";
@@ -62,7 +62,6 @@ export default function BasketsPage() {
   }, [session.walletAddress]);
 
   const totalHolders = created.reduce((sum, i) => sum + i.holders, 0);
-  const totalVolume = created.reduce((sum, i) => sum + i.totalInvestedUsd, 0);
   const best = [...created]
     .filter((i) => i.returnSincePublishPct !== null)
     .sort((a, b) => (b.returnSincePublishPct ?? 0) - (a.returnSincePublishPct ?? 0))[0];
@@ -213,12 +212,6 @@ export default function BasketsPage() {
                 {totalHolders.toLocaleString()}
               </p>
               <p className="text-base text-muted">total investors</p>
-            </div>
-            <div>
-              <p className="font-display text-3xl font-medium tabular-nums text-foreground">
-                {formatUsd(totalVolume)}
-              </p>
-              <p className="text-base text-muted">total invested</p>
             </div>
             {best && (
               <div>

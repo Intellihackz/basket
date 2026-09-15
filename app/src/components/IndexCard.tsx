@@ -17,6 +17,20 @@ function tintFor(id: string): string {
   return TINTS[hash % TINTS.length];
 }
 
+function PeopleIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" className={`shrink-0 ${className}`}>
+      <circle cx="7" cy="4.5" r="2.25" stroke="currentColor" strokeWidth="1.4" />
+      <path
+        d="M2 12C2.7 9 4.6 7.5 7 7.5C9.4 7.5 11.3 9 12 12"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 function TrendGlyph({ positive }: { positive: boolean }) {
   return (
     <svg width="9" height="9" viewBox="0 0 10 10" fill="none" className="shrink-0">
@@ -45,17 +59,17 @@ export default function IndexCard({
 
   return (
     <Link
-      href={`/index/${index.id}`}
+      href={`/basket/${index.id}`}
       className={`group flex flex-col rounded-2xl border border-border-subtle bg-surface transition-all duration-200 hover:border-accent hover:shadow-[0_1px_2px_rgb(var(--shadow-color)/0.04),0_16px_32px_-12px_rgb(var(--shadow-color)/0.16)] ${
         featured ? "p-7 sm:p-8" : "p-7"
       }`}
     >
       {/* Logo cluster panel */}
       <div
-        className={`relative flex items-center overflow-hidden rounded-xl ${featured ? "p-7" : "p-6"}`}
+        className={`flex items-center overflow-hidden rounded-xl ${featured ? "p-7" : "p-6"}`}
         style={{ backgroundColor: `color-mix(in srgb, ${tintFor(index.id)} 14%, var(--surface-hover))` }}
       >
-        <div className="flex flex-1 items-center gap-2 overflow-hidden pr-20">
+        <div className="flex flex-1 items-center gap-2 overflow-hidden">
           {shownLogos.map((asset) => (
             <CompanyLogo
               key={asset.symbol}
@@ -70,10 +84,20 @@ export default function IndexCard({
             </span>
           )}
         </div>
+      </div>
 
+      {/* Title + return */}
+      <div className="mt-5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+        <h3
+          className={`font-display font-medium leading-tight tracking-tight text-foreground ${
+            featured ? "text-3xl sm:text-4xl" : "text-2xl"
+          }`}
+        >
+          {index.name}
+        </h3>
         {index.returnSincePublishPct !== null && (
           <span
-            className={`absolute right-3 top-3 inline-flex items-center gap-1 rounded-lg bg-surface px-2.5 py-1.5 text-base font-semibold tabular-nums ${
+            className={`inline-flex items-center gap-1 text-base font-semibold tabular-nums ${
               positive ? "text-positive" : "text-negative"
             }`}
           >
@@ -82,15 +106,6 @@ export default function IndexCard({
           </span>
         )}
       </div>
-
-      {/* Title + creator */}
-      <h3
-        className={`font-display mt-5 font-medium leading-tight tracking-tight text-foreground ${
-          featured ? "text-3xl sm:text-4xl" : "text-2xl"
-        }`}
-      >
-        {index.name}
-      </h3>
       <div className="mt-2 flex items-center gap-1.5 text-base text-muted">
         <Avatar username={index.creatorUsername} size={18} />
         <span>@{index.creatorUsername}</span>
@@ -110,8 +125,9 @@ export default function IndexCard({
             {asset.symbol}
           </span>
         ))}
-        <span className="rounded-lg bg-surface-hover px-3 py-1.5 text-base font-medium text-muted">
-          {index.holders.toLocaleString()} {index.holders === 1 ? "investor" : "investors"}
+        <span className="inline-flex items-center gap-1.5 rounded-lg bg-surface-hover px-3 py-1.5 text-base font-medium text-muted">
+          <PeopleIcon />
+          {index.holders.toLocaleString()}
         </span>
       </div>
     </Link>

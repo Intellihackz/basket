@@ -7,7 +7,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <KineticGrid />
       <div className="relative z-10 flex flex-1 flex-col">
         <NavBar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pb-24 sm:pb-0">{children}</main>
       </div>
     </div>
   );

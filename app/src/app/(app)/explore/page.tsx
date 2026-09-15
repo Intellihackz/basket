@@ -6,7 +6,7 @@ import type { PublicIndex } from "@/lib/db/index-stats";
 import { POPULAR_TICKERS } from "@/lib/xstocks/registry";
 import IndexCard from "@/components/IndexCard";
 import { CompanyLogo } from "@/components/TickerChip";
-import { getCachedIndexes, isIndexesCacheStale, setIndexesCache } from "@/lib/indexes-cache";
+import { getCachedIndexes, setIndexesCache } from "@/lib/indexes-cache";
 
 const SORTS = [
   { id: "Trending", label: "Trending" },
@@ -69,19 +69,17 @@ export default function ExplorePage() {
   const popoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // A fresh cache is shown immediately with no refetch; a stale (or missing) one still
-    // refetches, but only the missing case shows a loading state — a stale-but-present
-    // cache updates quietly in place once the response lands.
-    if (isIndexesCacheStale()) {
-      fetch("/api/indexes")
-        .then((res) => res.json())
-        .then((data) => {
-          const list: PublicIndex[] = data.indexes ?? [];
-          setIndexes(list);
-          setIndexesCache(list);
-        })
-        .finally(() => setLoading(false));
-    }
+    // A cached list (if any) is shown immediately with no loading state, but returns are
+    // live-price-derived and move constantly, so we always refetch in the background to
+    // stay in sync with the basket detail page rather than trusting a stale snapshot.
+    fetch("/api/indexes")
+      .then((res) => res.json())
+      .then((data) => {
+        const list: PublicIndex[] = data.indexes ?? [];
+        setIndexes(list);
+        setIndexesCache(list);
+      })
+      .finally(() => setLoading(false));
 
     fetch(`/api/prices?symbols=${TICKER_SYMBOLS.join(",")}`)
       .then((res) => res.json())

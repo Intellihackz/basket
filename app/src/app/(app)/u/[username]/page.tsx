@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { notFound, useParams, useRouter } from "next/navigation";
-import { formatUsd, formatUsdFull, formatPercent } from "@/lib/mock-data";
+import { formatUsdFull, formatPercent } from "@/lib/mock-data";
 import type { PublicIndex } from "@/lib/db/index-stats";
 import type { PublicPosition } from "@/app/api/purchases/me/route";
 import { findXStock } from "@/lib/xstocks/registry";
@@ -111,8 +111,6 @@ export default function ProfilePage() {
   const walletShort = isOwnProfile ? session.walletShort : profile?.walletShort;
   const avatarIndex = isOwnProfile ? session.avatarIndex : profile?.avatarIndex ?? null;
 
-  const totalHolders = created.reduce((sum, i) => sum + i.holders, 0);
-  const totalVolume = created.reduce((sum, i) => sum + i.totalInvestedUsd, 0);
   const best = [...created]
     .filter((i) => i.returnSincePublishPct !== null)
     .sort((a, b) => (b.returnSincePublishPct ?? 0) - (a.returnSincePublishPct ?? 0))[0];
@@ -299,18 +297,6 @@ export default function ProfilePage() {
                 <p className="font-display text-3xl font-medium tabular-nums text-foreground">{created.length}</p>
                 <p className="text-base text-muted">baskets created</p>
               </div>
-              <div>
-                <p className="font-display text-3xl font-medium tabular-nums text-foreground">
-                  {totalHolders.toLocaleString()}
-                </p>
-                <p className="text-base text-muted">total investors</p>
-              </div>
-              <div>
-                <p className="font-display text-3xl font-medium tabular-nums text-foreground">
-                  {formatUsd(totalVolume)}
-                </p>
-                <p className="text-base text-muted">total invested</p>
-              </div>
               {best && (
                 <div>
                   <p className="font-display text-3xl font-medium tabular-nums text-positive">
@@ -392,10 +378,6 @@ export default function ProfilePage() {
                       {formatUsdFull(netPnL)} ({totalReturn.toFixed(2)}%)
                     </span>
                   </div>
-                  <p className="mt-1 text-sm text-muted">
-                    Invested capital: <strong className="text-foreground">{formatUsdFull(totalInvested)}</strong>
-                  </p>
-
                   {underlyingStocks.length > 0 && (
                     <div className="mt-6 border-t border-border-subtle pt-6">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -458,7 +440,7 @@ export default function ProfilePage() {
                           <div>
                             <div className="flex items-center gap-2">
                               <Link
-                                href={`/index/${p.indexId}`}
+                                href={`/basket/${p.indexId}`}
                                 className="font-display text-xl font-medium text-foreground hover:text-accent transition-colors"
                               >
                                 {p.indexName}
@@ -484,7 +466,7 @@ export default function ProfilePage() {
                             </div>
 
                             <Link
-                              href={`/index/${p.indexId}`}
+                              href={`/basket/${p.indexId}`}
                               className="rounded-xl bg-accent-soft px-3.5 py-1.5 text-sm font-semibold text-accent-strong hover:bg-accent hover:text-accent-foreground transition-colors"
                             >
                               Invest more

@@ -57,7 +57,7 @@ export default function CreatePage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to publish index");
-      router.push(`/index/${data.index.id}`);
+      router.push(`/basket/${data.index.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to publish index");
       setPublishing(false);
